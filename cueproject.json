@@ -1,0 +1,14 @@
+{
+    "assetRoot": "Assets",
+    "engineVersion": 1,
+    "gameReleaseBuildBackend": "CMake",
+    "gameReleaseBuildConfiguration": "Release",
+    "gameReleaseExecutableName": "Game",
+    "gameReleaseIconPath": "",
+    "gameReleaseOutputRoot": "Builds/Windows",
+    "gameReleaseWindowTitle": "BorroWing",
+    "name": "BorroWing",
+    "scriptBuildConfiguration": "Debug",
+    "scriptRoot": ".",
+    "startupScene": "Assets/Scenes/Main.cuescene"
+}
