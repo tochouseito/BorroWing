@@ -14,6 +14,8 @@ void PlayerFlight::bind_fields(const Marionette::ScriptFieldReader& a_reader)
     (void)read_float(a_reader, "cameraDistance", cameraDistance);
     (void)read_float(a_reader, "cameraHeight", cameraHeight);
     (void)read_float(a_reader, "cameraFovY", cameraFovY);
+    (void)read_float(a_reader, "cameraTiltAngle", cameraTiltAngle);
+    (void)read_float(a_reader, "cameraTiltSmoothing", cameraTiltSmoothing);
 }
 
 void PlayerFlight::start()
@@ -81,6 +83,10 @@ void PlayerFlight::update_player(float a_deltaTime)
         -maxOffsetY,
         maxOffsetY);
 
+    const float targetTilt = -inputX * cameraTiltAngle;
+    const float tiltBlend = std::clamp(cameraTiltSmoothing * a_deltaTime, 0.0f, 1.0f);
+    currentTilt += (targetTilt - currentTilt) * tiltBlend;
+
     Transform transform{};
     if (get_transform(transform) != CueResult_Ok)
     {
@@ -88,7 +94,7 @@ void PlayerFlight::update_player(float a_deltaTime)
     }
 
     transform.position = { offsetX, offsetY, railDistance };
-    transform.rotation = { 0.0f, 0.0f, -inputX * 0.25f };
+    transform.rotation = { 0.0f, 0.0f, currentTilt };
     (void)set_transform(transform);
 }
 

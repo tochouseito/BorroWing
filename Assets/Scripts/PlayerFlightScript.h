@@ -49,6 +49,16 @@ public:
             "Camera",
             "cameraFovY",
             64.0f,
+            Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META(
+            "Camera",
+            "cameraTiltAngle",
+            0.25f,
+            Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META(
+            "Camera",
+            "cameraTiltSmoothing",
+            8.0f,
             Marionette::EditAnywhere | Marionette::Serialize)
     );
     MARIONETTE_NO_FUNCTIONS();
@@ -74,6 +84,9 @@ private:
     float cameraDistance = 10.0f;
     float cameraHeight = 2.0f;
     float cameraFovY = 64.0f;
+    float cameraTiltAngle = 0.25f;
+    float cameraTiltSmoothing = 8.0f;
+    float currentTilt = 0.0f;
 };
 
 [[nodiscard]] Cue::Core::Native::ScriptClassDefinition
