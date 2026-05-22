@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <string>
 #include <string_view>
 
 namespace
@@ -148,6 +149,18 @@ namespace
         return desc;
     }
 
+    [[nodiscard]] Marionette::SpawnObjectDesc make_spawn_desc(
+        Marionette::SpawnObjectKind a_kind,
+        std::string_view a_name,
+        std::string_view a_tag,
+        const Marionette::Transform& a_transform) noexcept
+    {
+        Marionette::SpawnObjectDesc desc =
+            make_spawn_desc(a_name, a_tag, a_transform);
+        desc.kind = a_kind;
+        return desc;
+    }
+
     [[nodiscard]] Marionette::StaticMeshRendererComponentData
     make_renderer(uint8_t a_castsShadow, uint8_t a_receivesShadow) noexcept
     {
@@ -158,8 +171,18 @@ namespace
         return renderer;
     }
 
-    [[nodiscard]] Marionette::ColliderComponentData make_box_trigger(
-        const CueFloat3& a_halfExtent) noexcept
+    [[nodiscard]] Marionette::MeshFilterComponentData make_mesh_filter(
+        std::string_view a_modelName) noexcept
+    {
+        Marionette::MeshFilterComponentData meshFilter{};
+        meshFilter.modelName = make_view(a_modelName);
+        meshFilter.meshId = 0u;
+        return meshFilter;
+    }
+
+    [[nodiscard]] Marionette::ColliderComponentData make_box_collider(
+        const CueFloat3& a_halfExtent,
+        bool a_isTrigger) noexcept
     {
         Marionette::ColliderComponentData collider{};
         collider.meshModelName = make_view("");
@@ -172,8 +195,29 @@ namespace
         collider.restitution = 0.0f;
         collider.layer = 1u;
         collider.mask = 0xffffu;
-        collider.isTrigger = 1u;
+        collider.isTrigger = a_isTrigger ? 1u : 0u;
         return collider;
+    }
+
+    [[nodiscard]] Marionette::ColliderComponentData make_box_trigger(
+        const CueFloat3& a_halfExtent) noexcept
+    {
+        return make_box_collider(a_halfExtent, true);
+    }
+
+    [[nodiscard]] bool aabb_overlap(
+        const CueFloat3& a_leftCenter,
+        const CueFloat3& a_leftHalfExtent,
+        const CueFloat3& a_rightCenter,
+        const CueFloat3& a_rightHalfExtent) noexcept
+    {
+        return
+            std::abs(a_leftCenter.x - a_rightCenter.x) <=
+                a_leftHalfExtent.x + a_rightHalfExtent.x &&
+            std::abs(a_leftCenter.y - a_rightCenter.y) <=
+                a_leftHalfExtent.y + a_rightHalfExtent.y &&
+            std::abs(a_leftCenter.z - a_rightCenter.z) <=
+                a_leftHalfExtent.z + a_rightHalfExtent.z;
     }
 }
 
@@ -246,6 +290,7 @@ void GameManager::bind_fields(const Marionette::ScriptFieldReader& a_reader)
         largeMissileSpawnInterval);
     (void)read_float(a_reader, "largeMissileSpeed", largeMissileSpeed);
     (void)read_float(a_reader, "spawnLeadDistance", spawnLeadDistance);
+    (void)read_float(a_reader, "worldScrollSpeed", worldScrollSpeed);
     fieldGauge = std::max(0.0f, fieldMaxGauge);
 }
 
@@ -259,6 +304,7 @@ void GameManager::start()
 
     resolve_player();
     configure_player_collider();
+    load_terrain_config();
 }
 
 void GameManager::update()
@@ -272,9 +318,12 @@ void GameManager::update()
     sonicStreamTimer = std::max(0.0f, sonicStreamTimer - dt);
     armorStateTimer = std::max(0.0f, armorStateTimer - dt);
     infiniteMissileTimer = std::max(0.0f, infiniteMissileTimer - dt);
+    terrainHitCooldown = std::max(0.0f, terrainHitCooldown - dt);
     progressLogTimer = std::max(0.0f, progressLogTimer - dt);
 
     resolve_player();
+    update_terrain_segments(dt);
+    update_terrain_collisions(dt);
     update_convert_field(dt);
     update_infinite_missile(dt);
     update_player_status_visual();
@@ -882,6 +931,392 @@ void GameManager::update_combat(float)
     missileFireTimer = std::max(0.03f, fireInterval * fireIntervalMultiplier);
 }
 
+void GameManager::load_terrain_config()
+{
+    if (hasLoadedTerrainConfig)
+    {
+        return;
+    }
+
+    Marionette::JsonConfigHandle indexConfig{};
+    if (load_json_config(
+            "Terrain/GrandCanyonSegments/grand_canyon_segments.index.json",
+            indexConfig) != CueResult_Ok)
+    {
+        log_info("Grand canyon terrain config was not loaded.");
+        hasLoadedTerrainConfig = true;
+        return;
+    }
+
+    int32_t segmentCount = 0;
+    if (get_json_config_int(indexConfig, "segmentCount", segmentCount) !=
+            CueResult_Ok ||
+        segmentCount <= 0)
+    {
+        (void)unload_json_config(indexConfig);
+        hasLoadedTerrainConfig = true;
+        log_info("Grand canyon terrain config has no segments.");
+        return;
+    }
+
+    terrainDefinitions.clear();
+    terrainDefinitions.reserve(static_cast<size_t>(segmentCount));
+    for (int32_t index = 0; index < segmentCount; ++index)
+    {
+        TerrainSegmentDef definition{};
+        if (read_terrain_segment_definition(
+                indexConfig,
+                static_cast<uint32_t>(index),
+                definition))
+        {
+            terrainDefinitions.push_back(std::move(definition));
+        }
+    }
+
+    (void)unload_json_config(indexConfig);
+    hasLoadedTerrainConfig = true;
+
+    char message[160]{};
+    (void)std::snprintf(
+        message,
+        sizeof(message),
+        "Grand canyon terrain definitions loaded: %d",
+        static_cast<int>(terrainDefinitions.size()));
+    log_info(message);
+}
+
+void GameManager::unload_terrain_config()
+{
+    for (ActiveTerrainSegment& segment : activeTerrainSegments)
+    {
+        destroy_terrain_segment(segment);
+    }
+    activeTerrainSegments.clear();
+    terrainDefinitions.clear();
+    hasLoadedTerrainConfig = false;
+}
+
+bool GameManager::read_terrain_segment_definition(
+    Marionette::JsonConfigHandle a_indexConfig,
+    uint32_t a_index,
+    TerrainSegmentDef& a_outDefinition)
+{
+    const std::string basePath =
+        "segments[" + std::to_string(a_index) + "]";
+    std::string metadataPath{};
+    if (get_json_config_string(
+            a_indexConfig,
+            basePath + ".metadata",
+            metadataPath) != CueResult_Ok)
+    {
+        return false;
+    }
+
+    Marionette::JsonConfigHandle segmentConfig{};
+    if (load_json_config(
+            "Terrain/GrandCanyonSegments/" + metadataPath,
+            segmentConfig) != CueResult_Ok)
+    {
+        return false;
+    }
+
+    TerrainSegmentDef definition{};
+    (void)get_json_config_string(segmentConfig, "id", definition.id);
+    (void)get_json_config_string(
+        segmentConfig,
+        "visualModelName",
+        definition.modelName);
+    (void)get_json_config_float(segmentConfig, "length", definition.length);
+    (void)get_json_config_bool(
+        segmentConfig,
+        "hasObstacles",
+        definition.hasObstacles);
+
+    int32_t proxyCount = 0;
+    (void)get_json_config_int(
+        segmentConfig,
+        "collision.proxyCount",
+        proxyCount);
+    proxyCount = std::max(0, proxyCount);
+    definition.proxies.reserve(static_cast<size_t>(proxyCount));
+    for (int32_t proxyIndex = 0; proxyIndex < proxyCount; ++proxyIndex)
+    {
+        const std::string proxyPath =
+            "collision.proxies[" + std::to_string(proxyIndex) + "]";
+        TerrainProxyDef proxy{};
+        (void)get_json_config_string(
+            segmentConfig,
+            proxyPath + ".name",
+            proxy.name);
+        (void)get_json_config_float(
+            segmentConfig,
+            proxyPath + ".position[0]",
+            proxy.position.x);
+        (void)get_json_config_float(
+            segmentConfig,
+            proxyPath + ".position[1]",
+            proxy.position.y);
+        (void)get_json_config_float(
+            segmentConfig,
+            proxyPath + ".position[2]",
+            proxy.position.z);
+
+        CueFloat3 size{ 1.0f, 1.0f, 1.0f };
+        (void)get_json_config_float(
+            segmentConfig,
+            proxyPath + ".size[0]",
+            size.x);
+        (void)get_json_config_float(
+            segmentConfig,
+            proxyPath + ".size[1]",
+            size.y);
+        (void)get_json_config_float(
+            segmentConfig,
+            proxyPath + ".size[2]",
+            size.z);
+        proxy.halfExtent = scale(size, 0.5f);
+        definition.proxies.push_back(std::move(proxy));
+    }
+
+    (void)unload_json_config(segmentConfig);
+
+    if (definition.id.empty() || definition.modelName.empty() ||
+        definition.length <= 0.0f)
+    {
+        return false;
+    }
+
+    a_outDefinition = std::move(definition);
+    return true;
+}
+
+void GameManager::update_terrain_segments(float a_deltaTime)
+{
+    if (terrainDefinitions.empty() ||
+        playerEntity.value == k_cueInvalidHandleValue)
+    {
+        return;
+    }
+
+    Marionette::Transform playerTransform{};
+    if (get_transform(playerEntity, playerTransform) != CueResult_Ok)
+    {
+        return;
+    }
+
+    const float scrollDelta =
+        std::max(0.0f, worldScrollSpeed) * a_deltaTime;
+    if (scrollDelta > 0.0f)
+    {
+        for (ActiveTerrainSegment& segment : activeTerrainSegments)
+        {
+            segment.centerZ -= scrollDelta;
+            translate_entity_z(segment.visualEntity, -scrollDelta);
+            for (CueEntityHandle proxyEntity : segment.proxyEntities)
+            {
+                translate_entity_z(proxyEntity, -scrollDelta);
+            }
+        }
+        terrainNextEntryZ -= scrollDelta;
+    }
+
+    constexpr float k_forwardTerrainDistance = 260.0f;
+    constexpr float k_cleanupDistance = 120.0f;
+    const float targetEntryZ =
+        playerTransform.position.z + k_forwardTerrainDistance;
+    while (terrainNextEntryZ < targetEntryZ)
+    {
+        const uint32_t definitionIndex = choose_terrain_segment_index();
+        const TerrainSegmentDef& definition =
+            terrainDefinitions[definitionIndex];
+        const float centerZ = terrainNextEntryZ + definition.length * 0.5f;
+        spawn_terrain_segment(definition, definitionIndex, centerZ);
+        terrainNextEntryZ += definition.length;
+    }
+
+    const float cleanupZ = playerTransform.position.z - k_cleanupDistance;
+    activeTerrainSegments.erase(
+        std::remove_if(
+            activeTerrainSegments.begin(),
+            activeTerrainSegments.end(),
+            [this, cleanupZ](ActiveTerrainSegment& a_segment)
+            {
+                if (a_segment.centerZ + a_segment.length * 0.5f >= cleanupZ)
+                {
+                    return false;
+                }
+
+                destroy_terrain_segment(a_segment);
+                return true;
+            }),
+        activeTerrainSegments.end());
+}
+
+void GameManager::translate_entity_z(
+    CueEntityHandle a_entity,
+    float a_deltaZ) const
+{
+    if (a_entity.value == k_cueInvalidHandleValue)
+    {
+        return;
+    }
+
+    Marionette::Transform transform{};
+    if (get_transform(a_entity, transform) != CueResult_Ok)
+    {
+        return;
+    }
+
+    transform.position.z += a_deltaZ;
+    (void)set_transform(a_entity, transform);
+}
+
+uint32_t GameManager::choose_terrain_segment_index() const noexcept
+{
+    if (terrainDefinitions.empty())
+    {
+        return 0u;
+    }
+
+    uint32_t state = spawnIndex * 1664525u + 1013904223u;
+    state ^= static_cast<uint32_t>(activeTerrainSegments.size() * 747796405u);
+    return state % static_cast<uint32_t>(terrainDefinitions.size());
+}
+
+void GameManager::spawn_terrain_segment(
+    const TerrainSegmentDef& a_definition,
+    uint32_t a_definitionIndex,
+    float a_centerZ)
+{
+    Marionette::Transform transform = make_transform(
+        { 0.0f, 0.0f, a_centerZ },
+        { 1.0f, 1.0f, 1.0f });
+
+    CueEntityHandle visualEntity{ k_cueInvalidHandleValue };
+    if (spawn_object(
+            make_spawn_desc(
+                Marionette::SpawnObjectKindStaticMesh,
+                a_definition.id,
+                "Terrain",
+                transform),
+            visualEntity) != CueResult_Ok)
+    {
+        return;
+    }
+
+    (void)add_or_set_component(
+        visualEntity,
+        Marionette::ComponentKindMeshFilter,
+        make_mesh_filter(a_definition.modelName));
+    (void)add_or_set_component(
+        visualEntity,
+        Marionette::ComponentKindStaticMeshRenderer,
+        make_renderer(1u, 1u));
+
+    ActiveTerrainSegment segment{};
+    segment.visualEntity = visualEntity;
+    segment.definitionIndex = a_definitionIndex;
+    segment.centerZ = a_centerZ;
+    segment.length = a_definition.length;
+    for (const TerrainProxyDef& proxy : a_definition.proxies)
+    {
+        Marionette::Transform proxyTransform = make_transform(
+            {
+                proxy.position.x,
+                proxy.position.y,
+                a_centerZ + proxy.position.z,
+            },
+            {
+                proxy.halfExtent.x * 2.0f,
+                proxy.halfExtent.y * 2.0f,
+                proxy.halfExtent.z * 2.0f,
+            });
+
+        CueEntityHandle proxyEntity{ k_cueInvalidHandleValue };
+        if (spawn_object(
+                make_spawn_desc(
+                    Marionette::SpawnObjectKindEmpty,
+                    proxy.name,
+                    "TerrainCollision",
+                    proxyTransform),
+                proxyEntity) != CueResult_Ok)
+        {
+            continue;
+        }
+
+        (void)add_or_set_component(
+            proxyEntity,
+            Marionette::ComponentKindCollider,
+            make_box_collider(proxy.halfExtent, false));
+        segment.proxyEntities.push_back(proxyEntity);
+    }
+
+    activeTerrainSegments.push_back(std::move(segment));
+}
+
+void GameManager::destroy_terrain_segment(
+    ActiveTerrainSegment& a_segment) const
+{
+    destroy_entity_safe(a_segment.visualEntity);
+    a_segment.visualEntity = CueEntityHandle{ k_cueInvalidHandleValue };
+    for (CueEntityHandle proxyEntity : a_segment.proxyEntities)
+    {
+        destroy_entity_safe(proxyEntity);
+    }
+    a_segment.proxyEntities.clear();
+}
+
+void GameManager::update_terrain_collisions(float)
+{
+    if (terrainHitCooldown > 0.0f ||
+        playerEntity.value == k_cueInvalidHandleValue)
+    {
+        return;
+    }
+
+    Marionette::Transform playerTransform{};
+    if (get_transform(playerEntity, playerTransform) != CueResult_Ok)
+    {
+        return;
+    }
+
+    constexpr CueFloat3 k_playerHalfExtent{ 0.65f, 0.3f, 1.25f };
+    for (const ActiveTerrainSegment& segment : activeTerrainSegments)
+    {
+        if (segment.definitionIndex >= terrainDefinitions.size())
+        {
+            continue;
+        }
+
+        const TerrainSegmentDef& definition =
+            terrainDefinitions[segment.definitionIndex];
+        for (const TerrainProxyDef& proxy : definition.proxies)
+        {
+            const CueFloat3 proxyCenter{
+                proxy.position.x,
+                proxy.position.y,
+                segment.centerZ + proxy.position.z
+            };
+            if (!aabb_overlap(
+                    playerTransform.position,
+                    k_playerHalfExtent,
+                    proxyCenter,
+                    proxy.halfExtent))
+            {
+                continue;
+            }
+
+            if (!consume_armor())
+            {
+                score = std::max(0, score - 50);
+            }
+            terrainHitCooldown = 1.0f;
+            log_info("Player hit grand canyon terrain.");
+            return;
+        }
+    }
+}
+
 void GameManager::update_spawning(float a_deltaTime)
 {
     if (playerEntity.value == k_cueInvalidHandleValue)
@@ -1036,6 +1471,8 @@ void GameManager::update_enemy_missiles(float a_deltaTime)
             scale(
                 normalize_or_forward(missile.direction),
                 enemyMissileSpeed * a_deltaTime));
+        transform.position.z -=
+            std::max(0.0f, worldScrollSpeed) * a_deltaTime;
         transform.rotation.z += 2.4f * a_deltaTime;
         (void)set_transform(missile.entity, transform);
 
@@ -1097,6 +1534,8 @@ void GameManager::update_large_missiles(float a_deltaTime)
             scale(
                 normalize_or_forward(missile.direction),
                 largeMissileSpeed * a_deltaTime));
+        transform.position.z -=
+            std::max(0.0f, worldScrollSpeed) * a_deltaTime;
         transform.rotation.z += 0.8f * a_deltaTime;
         (void)set_transform(missile.entity, transform);
 
@@ -1151,7 +1590,8 @@ void GameManager::update_enemies(float a_deltaTime)
             continue;
         }
 
-        transform.position.z -= 5.0f * a_deltaTime;
+        transform.position.z -=
+            (std::max(0.0f, worldScrollSpeed) + 5.0f) * a_deltaTime;
         transform.rotation.z += 1.1f * a_deltaTime;
         (void)set_transform(enemy.entity, transform);
     }
@@ -1169,6 +1609,8 @@ void GameManager::update_enemies(float a_deltaTime)
 
 void GameManager::update_salvage()
 {
+    const float scrollDelta =
+        std::max(0.0f, worldScrollSpeed) * delta_time();
     for (Salvage& salvage : salvages)
     {
         Marionette::Transform transform{};
@@ -1178,6 +1620,7 @@ void GameManager::update_salvage()
             continue;
         }
 
+        transform.position.z -= scrollDelta;
         transform.rotation.z += 0.035f;
         (void)set_transform(salvage.entity, transform);
     }

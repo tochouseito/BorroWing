@@ -4,6 +4,7 @@
 
 // === C++ includes ===
 #include <cstdint>
+#include <string>
 #include <vector>
 
 MARIONETTE_DECLARE_SCRIPT_TYPE(GameManager, "GameManager");
@@ -183,6 +184,11 @@ public:
             "Spawn",
             "spawnLeadDistance",
             72.0f,
+            Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META(
+            "World",
+            "worldScrollSpeed",
+            18.0f,
             Marionette::EditAnywhere | Marionette::Serialize)
     );
     MARIONETTE_NO_FUNCTIONS();
@@ -235,6 +241,31 @@ private:
         bool inConvertField = false;
     };
 
+    struct TerrainProxyDef final
+    {
+        std::string name{};
+        CueFloat3 position{ 0.0f, 0.0f, 0.0f };
+        CueFloat3 halfExtent{ 0.5f, 0.5f, 0.5f };
+    };
+
+    struct TerrainSegmentDef final
+    {
+        std::string id{};
+        std::string modelName{};
+        float length = 80.0f;
+        bool hasObstacles = false;
+        std::vector<TerrainProxyDef> proxies{};
+    };
+
+    struct ActiveTerrainSegment final
+    {
+        CueEntityHandle visualEntity{ k_cueInvalidHandleValue };
+        std::vector<CueEntityHandle> proxyEntities{};
+        uint32_t definitionIndex = 0;
+        float centerZ = 0.0f;
+        float length = 80.0f;
+    };
+
     void resolve_player();
     void configure_player_collider() const;
     void update_convert_field(float a_deltaTime);
@@ -269,6 +300,21 @@ private:
         CueEntityHandle a_entity,
         const Marionette::Color& a_color) const;
     void update_combat(float a_deltaTime);
+    void load_terrain_config();
+    void unload_terrain_config();
+    void update_terrain_segments(float a_deltaTime);
+    void update_terrain_collisions(float a_deltaTime);
+    void spawn_terrain_segment(
+        const TerrainSegmentDef& a_definition,
+        uint32_t a_definitionIndex,
+        float a_centerZ);
+    void destroy_terrain_segment(ActiveTerrainSegment& a_segment) const;
+    [[nodiscard]] uint32_t choose_terrain_segment_index() const noexcept;
+    [[nodiscard]] bool read_terrain_segment_definition(
+        Marionette::JsonConfigHandle a_indexConfig,
+        uint32_t a_index,
+        TerrainSegmentDef& a_outDefinition);
+    void translate_entity_z(CueEntityHandle a_entity, float a_deltaZ) const;
     void update_spawning(float a_deltaTime);
     void update_missiles(float a_deltaTime);
     void update_enemy_missiles(float a_deltaTime);
@@ -296,6 +342,8 @@ private:
     std::vector<LargeMissile> largeMissiles{};
     std::vector<Enemy> enemies{};
     std::vector<Salvage> salvages{};
+    std::vector<TerrainSegmentDef> terrainDefinitions{};
+    std::vector<ActiveTerrainSegment> activeTerrainSegments{};
     CueEntityHandle convertFieldEntity{ k_cueInvalidHandleValue };
     std::vector<CueEntityHandle> lockedEnemies{};
     std::vector<CueEntityHandle> visualLockedEnemies{};
@@ -303,8 +351,11 @@ private:
     bool isConvertFieldActive = false;
     bool isPlayerStatusVisualActive = false;
     bool hasLoggedInfiniteReady = false;
+    bool hasLoadedTerrainConfig = false;
     float machineGunTimer = 0.0f;
     float missileFireTimer = 0.0f;
+    float terrainNextEntryZ = 0.0f;
+    float terrainHitCooldown = 0.0f;
     float enemySpawnTimer = 0.0f;
     float enemyMissileSpawnTimer = 0.35f;
     float largeMissileSpawnTimer = 2.4f;
@@ -350,6 +401,7 @@ private:
     float largeMissileSpawnInterval = 5.0f;
     float largeMissileSpeed = 16.0f;
     float spawnLeadDistance = 72.0f;
+    float worldScrollSpeed = 18.0f;
     int score = 0;
     int salvageCount = 0;
     int reverseMissileAmmo = 0;

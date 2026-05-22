@@ -29,7 +29,7 @@ void PlayerFlight::start()
     Transform transform{};
     if (get_transform(transform) == CueResult_Ok)
     {
-        railDistance = transform.position.z;
+        railDistance = 0.0f;
         offsetX = transform.position.x;
         offsetY = transform.position.y;
     }
@@ -73,7 +73,7 @@ void PlayerFlight::update_player(float a_deltaTime)
         inputY -= 1.0f;
     }
 
-    railDistance += railSpeed * a_deltaTime;
+    railDistance = 0.0f;
     offsetX = std::clamp(
         offsetX + inputX * moveSpeed * a_deltaTime,
         -maxOffsetX,
@@ -93,7 +93,7 @@ void PlayerFlight::update_player(float a_deltaTime)
         return;
     }
 
-    transform.position = { offsetX, offsetY, railDistance };
+    transform.position = { offsetX, offsetY, 0.0f };
     transform.rotation = { 0.0f, 0.0f, currentTilt };
     (void)set_transform(transform);
 }
