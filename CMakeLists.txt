@@ -51,10 +51,18 @@ set(CUE_SCRIPT_GENERATED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Intermediate/Generated
 set(CUE_SCRIPT_REGISTRY_CPP "${CUE_SCRIPT_GENERATED_DIR}/ScriptRegistry.gen.cpp")
 set(CUE_ENGINE_OUTPUT_DIR "${CUE_ENGINE_ROOT}/generated/outputs/Sdk/Lib/$<CONFIG>")
 set(CUE_ENGINE_VCPKG_TARGET_TRIPLET "x64-windows-static-md")
+set(CUE_ENGINE_VCPKG_HOST_TRIPLET "x64-windows")
 set(CUE_ENGINE_VCPKG_TARGET_ROOT
     "${CUE_ENGINE_ROOT}/out/build/win-x64/vcpkg_installed/${CUE_ENGINE_VCPKG_TARGET_TRIPLET}")
+set(CUE_ENGINE_VCPKG_HOST_ROOT
+    "${CUE_ENGINE_ROOT}/out/build/win-x64/vcpkg_installed/${CUE_ENGINE_VCPKG_HOST_TRIPLET}")
 list(APPEND CMAKE_PREFIX_PATH "${CUE_ENGINE_VCPKG_TARGET_ROOT}")
 find_package(directxtk12 CONFIG REQUIRED)
+find_package(Freetype REQUIRED)
+find_package(PNG REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(BZip2 REQUIRED)
+find_package(unofficial-brotli CONFIG REQUIRED)
 
 set(CUE_GAME_RELEASE_EXECUTABLE_NAME "Game")
 set(CUE_GAME_RELEASE_WINDOW_TITLE "Cue App")
@@ -318,6 +326,12 @@ target_link_libraries(CueApp PRIVATE
     "$<IF:$<CONFIG:Debug>,${CUE_ENGINE_VCPKG_TARGET_ROOT}/debug/lib/Jolt.lib,${CUE_ENGINE_VCPKG_TARGET_ROOT}/lib/Jolt.lib>"
     "${CUE_ENGINE_OUTPUT_DIR}/d3d12_backend.lib"
     Microsoft::DirectXTK12
+    Freetype::Freetype
+    PNG::PNG
+    ZLIB::ZLIB
+    BZip2::BZip2
+    unofficial::brotli::brotlidec
+    unofficial::brotli::brotlicommon
     "${CUE_ENGINE_OUTPUT_DIR}/xaudio2_backend.lib"
     winmm.lib
     ole32.lib
@@ -328,4 +342,17 @@ target_link_libraries(CueApp PRIVATE
     dxgi.lib
     dxcompiler.lib
     dxguid.lib
+)
+
+add_custom_command(TARGET CueApp POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CUE_ENGINE_ROOT}/generated/outputs/App/$<CONFIG>/EngineResources"
+        "$<TARGET_FILE_DIR:CueApp>/EngineResources"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<IF:$<CONFIG:Debug>,${CUE_ENGINE_VCPKG_HOST_ROOT}/debug/bin/dxcompiler.dll,${CUE_ENGINE_VCPKG_HOST_ROOT}/bin/dxcompiler.dll>"
+        "$<TARGET_FILE_DIR:CueApp>/dxcompiler.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<IF:$<CONFIG:Debug>,${CUE_ENGINE_VCPKG_HOST_ROOT}/debug/bin/dxil.dll,${CUE_ENGINE_VCPKG_HOST_ROOT}/bin/dxil.dll>"
+        "$<TARGET_FILE_DIR:CueApp>/dxil.dll"
+    VERBATIM
 )
