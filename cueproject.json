@@ -10,5 +10,5 @@
     "name": "BorroWing",
     "scriptBuildConfiguration": "Debug",
     "scriptRoot": ".",
-    "startupScene": "Assets/Scenes/Main.cuescene"
+    "startupScene": "Assets/Scenes/Title.cuescene"
 }

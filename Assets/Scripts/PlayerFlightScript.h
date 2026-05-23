@@ -87,6 +87,7 @@ private:
     float cameraTiltAngle = 0.25f;
     float cameraTiltSmoothing = 8.0f;
     float currentTilt = 0.0f;
+    uint32_t observedResetSerial = 0u;
 };
 
 [[nodiscard]] Cue::Core::Native::ScriptClassDefinition

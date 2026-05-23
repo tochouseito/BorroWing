@@ -5,6 +5,7 @@
 // === C++ includes ===
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 
 MARIONETTE_DECLARE_SCRIPT_TYPE(GameManager, "GameManager");
@@ -182,6 +183,16 @@ public:
             Marionette::EditAnywhere | Marionette::Serialize),
         CUE_FIELD_FLOAT_META(
             "Spawn",
+            "normalBulletSpawnInterval",
+            1.1f,
+            Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META(
+            "Spawn",
+            "normalBulletSpeed",
+            34.0f,
+            Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META(
+            "Spawn",
             "spawnLeadDistance",
             72.0f,
             Marionette::EditAnywhere | Marionette::Serialize),
@@ -189,6 +200,16 @@ public:
             "World",
             "worldScrollSpeed",
             18.0f,
+            Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META(
+            "Flow",
+            "stageDuration",
+            120.0f,
+            Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_INT32_META(
+            "Flow",
+            "playerHullMax",
+            3,
             Marionette::EditAnywhere | Marionette::Serialize)
     );
     MARIONETTE_NO_FUNCTIONS();
@@ -227,11 +248,29 @@ private:
         float age = 0.0f;
     };
 
+    enum class EnemyKind : uint8_t
+    {
+        Fighter,
+        MissileCarrier,
+        HeavyCarrier,
+        BossPart,
+        BossCore,
+    };
+
     struct Enemy final
     {
         CueEntityHandle entity{ k_cueInvalidHandleValue };
         float radius = 1.2f;
         int hp = 1;
+        EnemyKind kind = EnemyKind::Fighter;
+    };
+
+    struct EnemyBullet final
+    {
+        CueEntityHandle entity{ k_cueInvalidHandleValue };
+        CueFloat3 direction{ 0.0f, 0.0f, -1.0f };
+        float radius = 0.32f;
+        float age = 0.0f;
     };
 
     struct Salvage final
@@ -266,6 +305,56 @@ private:
         float length = 80.0f;
     };
 
+    enum class FlowState : uint8_t
+    {
+        Title,
+        Playing,
+        GameOver,
+        Result,
+    };
+
+    enum class StagePhase : uint8_t
+    {
+        Launch,
+        EnemyFormation,
+        SmallMissileIntro,
+        SalvageIntro,
+        LargeMissileIntro,
+        CombineStates,
+        MissileInfinity,
+        Boss,
+    };
+
+    void enter_title_scene();
+    void start_gameplay();
+    void enter_game_over_scene();
+    void enter_result_scene();
+    void request_scene_transition(const char* a_sceneName, bool a_cleared);
+    void destroy_play_scene_objects();
+    void update_scene_flow(float a_deltaTime);
+    void update_gameplay(float a_deltaTime);
+    void update_stage_phase();
+    [[nodiscard]] StagePhase phase_for_time(float a_elapsedTime) const noexcept;
+    void reset_gameplay_state();
+    void reset_player_transform() const;
+    void clear_dynamic_entities();
+    void ensure_flow_ui();
+    void update_flow_ui();
+    void destroy_flow_ui();
+    CueEntityHandle spawn_ui_text(
+        const char* a_name,
+        float a_y,
+        float a_height,
+        uint32_t a_fontSize,
+        uint32_t a_order,
+        const Marionette::Color& a_color);
+    void set_ui_text(
+        CueEntityHandle a_entity,
+        std::string_view a_text,
+        uint32_t a_fontSize,
+        uint32_t a_order,
+        const Marionette::Color& a_color) const;
+    void register_player_hit(int a_scorePenalty);
     void resolve_player();
     void configure_player_collider() const;
     void update_convert_field(float a_deltaTime);
@@ -317,6 +406,7 @@ private:
     void translate_entity_z(CueEntityHandle a_entity, float a_deltaZ) const;
     void update_spawning(float a_deltaTime);
     void update_missiles(float a_deltaTime);
+    void update_enemy_bullets(float a_deltaTime);
     void update_enemy_missiles(float a_deltaTime);
     void update_large_missiles(float a_deltaTime);
     void update_enemies(float a_deltaTime);
@@ -329,6 +419,10 @@ private:
         CueEntityHandle a_target,
         bool a_isReverse);
     void spawn_enemy(float a_playerZ);
+    void spawn_enemy_kind(EnemyKind a_kind, float a_playerZ);
+    void spawn_boss(float a_playerZ);
+    void run_boss_attack_pattern(const Marionette::Transform& a_playerTransform);
+    void spawn_enemy_bullet(const Marionette::Transform& a_playerTransform);
     void spawn_enemy_missile(const Marionette::Transform& a_playerTransform);
     void spawn_large_missile(const Marionette::Transform& a_playerTransform);
     void spawn_salvage(float a_playerZ);
@@ -338,6 +432,7 @@ private:
 
     CueEntityHandle playerEntity{ k_cueInvalidHandleValue };
     std::vector<Missile> missiles{};
+    std::vector<EnemyBullet> enemyBullets{};
     std::vector<EnemyMissile> enemyMissiles{};
     std::vector<LargeMissile> largeMissiles{};
     std::vector<Enemy> enemies{};
@@ -347,16 +442,31 @@ private:
     CueEntityHandle convertFieldEntity{ k_cueInvalidHandleValue };
     std::vector<CueEntityHandle> lockedEnemies{};
     std::vector<CueEntityHandle> visualLockedEnemies{};
+    CueEntityHandle uiCanvasEntity{ k_cueInvalidHandleValue };
+    CueEntityHandle uiTitleEntity{ k_cueInvalidHandleValue };
+    CueEntityHandle uiBodyEntity{ k_cueInvalidHandleValue };
+    CueEntityHandle uiHudEntity{ k_cueInvalidHandleValue };
+    FlowState flowState = FlowState::Title;
     bool hasLoggedStartup = false;
     bool isConvertFieldActive = false;
     bool isPlayerStatusVisualActive = false;
     bool hasLoggedInfiniteReady = false;
     bool hasLoadedTerrainConfig = false;
+    bool pendingGameOver = false;
+    bool pendingResult = false;
+    bool hasRequestedSceneTransition = false;
+    bool hasSpawnedBoss = false;
+    bool bossCoreExposed = false;
+    int bossPartsDestroyed = 0;
+    uint32_t bossAttackStep = 0;
+    StagePhase stagePhase = StagePhase::Launch;
     float machineGunTimer = 0.0f;
     float missileFireTimer = 0.0f;
     float terrainNextEntryZ = 0.0f;
     float terrainHitCooldown = 0.0f;
     float enemySpawnTimer = 0.0f;
+    float normalBulletSpawnTimer = 1.0f;
+    float bossAttackTimer = 1.0f;
     float enemyMissileSpawnTimer = 0.35f;
     float largeMissileSpawnTimer = 2.4f;
     float salvageSpawnTimer = 0.65f;
@@ -400,12 +510,17 @@ private:
     float enemyMissileSpeed = 26.0f;
     float largeMissileSpawnInterval = 5.0f;
     float largeMissileSpeed = 16.0f;
+    float normalBulletSpawnInterval = 1.1f;
+    float normalBulletSpeed = 34.0f;
     float spawnLeadDistance = 72.0f;
     float worldScrollSpeed = 18.0f;
+    float stageDuration = 120.0f;
     int score = 0;
     int salvageCount = 0;
     int reverseMissileAmmo = 0;
     int armorCount = 0;
+    int playerHull = 3;
+    int playerHullMax = 3;
     uint32_t spawnIndex = 0;
 };
 

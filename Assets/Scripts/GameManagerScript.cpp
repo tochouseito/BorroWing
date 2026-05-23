@@ -7,8 +7,14 @@
 #include <string>
 #include <string_view>
 
+#include "BorroWingGameState.h"
+
 namespace
 {
+    bool g_isGameplayActive = false;
+    uint32_t g_playerResetSerial = 0u;
+    BorroWing::RunSummary g_lastRunSummary{};
+
     constexpr Marionette::Color k_lockedEnemyColor{
         0.1f, 0.85f, 1.0f, 1.0f
     };
@@ -33,8 +39,26 @@ namespace
     constexpr Marionette::Color k_enemyMissileColor{
         1.0f, 0.22f, 0.12f, 1.0f
     };
+    constexpr Marionette::Color k_enemyBulletColor{
+        1.0f, 0.05f, 0.08f, 1.0f
+    };
     constexpr Marionette::Color k_largeMissileColor{
         0.78f, 0.18f, 1.0f, 1.0f
+    };
+    constexpr Marionette::Color k_bossColor{
+        0.95f, 0.1f, 0.22f, 1.0f
+    };
+    constexpr Marionette::Color k_bossPartColor{
+        0.95f, 0.42f, 0.16f, 1.0f
+    };
+    constexpr Marionette::Color k_bossCoreLockedColor{
+        0.24f, 0.24f, 0.28f, 1.0f
+    };
+    constexpr Marionette::Color k_missileCarrierColor{
+        0.22f, 0.75f, 1.0f, 1.0f
+    };
+    constexpr Marionette::Color k_heavyCarrierColor{
+        0.86f, 0.22f, 1.0f, 1.0f
     };
     constexpr Marionette::Color k_sonicStreamColor{
         0.12f, 0.55f, 1.0f, 1.0f
@@ -44,6 +68,21 @@ namespace
     };
     constexpr Marionette::Color k_infiniteMissileColor{
         1.0f, 0.25f, 0.9f, 1.0f
+    };
+    constexpr Marionette::Color k_uiTitleColor{
+        0.82f, 0.95f, 1.0f, 1.0f
+    };
+    constexpr Marionette::Color k_uiBodyColor{
+        0.94f, 0.94f, 0.9f, 1.0f
+    };
+    constexpr Marionette::Color k_uiWarningColor{
+        1.0f, 0.32f, 0.22f, 1.0f
+    };
+    constexpr Marionette::Color k_uiResultColor{
+        0.35f, 1.0f, 0.68f, 1.0f
+    };
+    constexpr Marionette::Color k_uiHudColor{
+        0.84f, 0.92f, 1.0f, 1.0f
     };
 
     [[nodiscard]] CueStringView make_view(std::string_view a_value) noexcept
@@ -205,6 +244,51 @@ namespace
         return make_box_collider(a_halfExtent, true);
     }
 
+    [[nodiscard]] Marionette::CanvasComponentData make_canvas() noexcept
+    {
+        Marionette::CanvasComponentData canvas{};
+        canvas.referenceSize = { 1920.0f, 1080.0f };
+        canvas.scaleFactor = 1.0f;
+        canvas.sortOrder = 100;
+        canvas.matchesScreen = 1u;
+        return canvas;
+    }
+
+    [[nodiscard]] Marionette::UiRectTransformComponentData make_ui_rect(
+        const CueFloat2& a_anchorMin,
+        const CueFloat2& a_anchorMax,
+        const CueFloat2& a_pivot,
+        const CueFloat2& a_anchoredPosition,
+        const CueFloat2& a_sizeDelta) noexcept
+    {
+        Marionette::UiRectTransformComponentData rect{};
+        rect.anchorMin = a_anchorMin;
+        rect.anchorMax = a_anchorMax;
+        rect.pivot = a_pivot;
+        rect.anchoredPosition = a_anchoredPosition;
+        rect.sizeDelta = a_sizeDelta;
+        return rect;
+    }
+
+    [[nodiscard]] Marionette::TextRendererComponentData make_text_renderer(
+        std::string_view a_text,
+        uint32_t a_fontSize,
+        uint32_t a_order,
+        const Marionette::Color& a_color) noexcept
+    {
+        Marionette::TextRendererComponentData text{};
+        text.text = make_view(a_text);
+        text.fontPath = make_view("");
+        text.color = a_color;
+        text.fontSize = a_fontSize;
+        text.layer = 100;
+        text.order = a_order;
+        text.horizontalAlign = Marionette::TextHorizontalAlignCenter;
+        text.verticalAlign = Marionette::TextVerticalAlignMiddle;
+        text.visible = 1u;
+        return text;
+    }
+
     [[nodiscard]] bool aabb_overlap(
         const CueFloat3& a_leftCenter,
         const CueFloat3& a_leftHalfExtent,
@@ -218,6 +302,39 @@ namespace
                 a_leftHalfExtent.y + a_rightHalfExtent.y &&
             std::abs(a_leftCenter.z - a_rightCenter.z) <=
                 a_leftHalfExtent.z + a_rightHalfExtent.z;
+    }
+}
+
+namespace BorroWing
+{
+    bool is_gameplay_active() noexcept
+    {
+        return g_isGameplayActive;
+    }
+
+    void set_gameplay_active(bool a_isActive) noexcept
+    {
+        g_isGameplayActive = a_isActive;
+    }
+
+    uint32_t player_reset_serial() noexcept
+    {
+        return g_playerResetSerial;
+    }
+
+    void bump_player_reset_serial() noexcept
+    {
+        ++g_playerResetSerial;
+    }
+
+    void set_last_run_summary(const RunSummary& a_summary) noexcept
+    {
+        g_lastRunSummary = a_summary;
+    }
+
+    RunSummary last_run_summary() noexcept
+    {
+        return g_lastRunSummary;
     }
 }
 
@@ -289,8 +406,19 @@ void GameManager::bind_fields(const Marionette::ScriptFieldReader& a_reader)
         "largeMissileSpawnInterval",
         largeMissileSpawnInterval);
     (void)read_float(a_reader, "largeMissileSpeed", largeMissileSpeed);
+    (void)read_float(
+        a_reader,
+        "normalBulletSpawnInterval",
+        normalBulletSpawnInterval);
+    (void)read_float(a_reader, "normalBulletSpeed", normalBulletSpeed);
     (void)read_float(a_reader, "spawnLeadDistance", spawnLeadDistance);
     (void)read_float(a_reader, "worldScrollSpeed", worldScrollSpeed);
+    (void)read_float(a_reader, "stageDuration", stageDuration);
+    int32_t hullMax = playerHullMax;
+    if (read_int32(a_reader, "playerHullMax", hullMax))
+    {
+        playerHullMax = std::max(1, hullMax);
+    }
     fieldGauge = std::max(0.0f, fieldMaxGauge);
 }
 
@@ -305,39 +433,580 @@ void GameManager::start()
     resolve_player();
     configure_player_collider();
     load_terrain_config();
+    start_gameplay();
 }
 
 void GameManager::update()
 {
     const float dt = delta_time();
-    elapsedTime += dt;
-    machineGunTimer = std::max(0.0f, machineGunTimer - dt);
-    missileFireTimer = std::max(0.0f, missileFireTimer - dt);
+    resolve_player();
+    ensure_flow_ui();
+    update_scene_flow(dt);
+    if (hasRequestedSceneTransition)
+    {
+        return;
+    }
+    update_flow_ui();
+}
+
+void GameManager::enter_title_scene()
+{
+    flowState = FlowState::Title;
+    BorroWing::set_gameplay_active(false);
+    pendingGameOver = false;
+    clear_dynamic_entities();
+    reset_gameplay_state();
+    reset_player_transform();
+    log_info("Title scene entered.");
+}
+
+void GameManager::start_gameplay()
+{
+    clear_dynamic_entities();
+    reset_gameplay_state();
+    reset_player_transform();
+    configure_player_collider();
+    flowState = FlowState::Playing;
+    BorroWing::bump_player_reset_serial();
+    BorroWing::set_gameplay_active(true);
+    log_info("Gameplay started.");
+}
+
+void GameManager::enter_game_over_scene()
+{
+    request_scene_transition("GameOver", false);
+}
+
+void GameManager::enter_result_scene()
+{
+    request_scene_transition("Result", true);
+}
+
+void GameManager::request_scene_transition(
+    const char* a_sceneName,
+    bool a_cleared)
+{
+    if (hasRequestedSceneTransition)
+    {
+        return;
+    }
+
+    hasRequestedSceneTransition = true;
+    BorroWing::set_gameplay_active(false);
+    BorroWing::set_last_run_summary(BorroWing::RunSummary{
+        score,
+        salvageCount,
+        armorCount,
+        elapsedTime,
+        a_cleared });
+
+    const Marionette::SceneId loadedScene =
+        Marionette::SceneManager.load_scene(a_sceneName);
+    if (loadedScene == Marionette::k_invalidSceneId)
+    {
+        hasRequestedSceneTransition = false;
+        BorroWing::set_gameplay_active(true);
+        log_warning("Scene transition request failed.");
+        return;
+    }
+
+    destroy_play_scene_objects();
+    log_info(a_cleared ? "Result scene requested." : "Game over scene requested.");
+}
+
+void GameManager::destroy_play_scene_objects()
+{
+    deactivate_convert_field();
+    clear_lock_visual(playerEntity);
+    lockedEnemies.clear();
+    visualLockedEnemies.clear();
+    clear_dynamic_entities();
+    destroy_flow_ui();
+
+    for (CueEntityHandle camera : find_entities_by_tag("MainCamera"))
+    {
+        destroy_entity_safe(camera);
+    }
+    for (CueEntityHandle light : find_entities_by_tag("DirectionalLight"))
+    {
+        destroy_entity_safe(light);
+    }
+    destroy_entity_safe(playerEntity);
+    playerEntity = CueEntityHandle{ k_cueInvalidHandleValue };
+    destroy_entity_safe(self());
+}
+
+void GameManager::update_scene_flow(float a_deltaTime)
+{
+    switch (flowState)
+    {
+    case FlowState::Title:
+        if (push_key(Marionette::Key::Enter) ||
+            push_key(Marionette::Key::Space))
+        {
+            start_gameplay();
+        }
+        return;
+    case FlowState::Playing:
+        update_gameplay(a_deltaTime);
+        if (pendingGameOver)
+        {
+            enter_game_over_scene();
+            return;
+        }
+        if (pendingResult)
+        {
+            enter_result_scene();
+        }
+        return;
+    case FlowState::GameOver:
+    case FlowState::Result:
+        if (push_key(Marionette::Key::Enter) ||
+            push_key(Marionette::Key::Space))
+        {
+            start_gameplay();
+            return;
+        }
+        if (push_key(Marionette::Key::Escape))
+        {
+            enter_title_scene();
+        }
+        return;
+    }
+}
+
+void GameManager::update_gameplay(float a_deltaTime)
+{
+    elapsedTime += a_deltaTime;
+    machineGunTimer = std::max(0.0f, machineGunTimer - a_deltaTime);
+    missileFireTimer = std::max(0.0f, missileFireTimer - a_deltaTime);
     reverseMissileStateTimer =
-        std::max(0.0f, reverseMissileStateTimer - dt);
-    sonicStreamTimer = std::max(0.0f, sonicStreamTimer - dt);
-    armorStateTimer = std::max(0.0f, armorStateTimer - dt);
-    infiniteMissileTimer = std::max(0.0f, infiniteMissileTimer - dt);
-    terrainHitCooldown = std::max(0.0f, terrainHitCooldown - dt);
-    progressLogTimer = std::max(0.0f, progressLogTimer - dt);
+        std::max(0.0f, reverseMissileStateTimer - a_deltaTime);
+    sonicStreamTimer = std::max(0.0f, sonicStreamTimer - a_deltaTime);
+    armorStateTimer = std::max(0.0f, armorStateTimer - a_deltaTime);
+    infiniteMissileTimer =
+        std::max(0.0f, infiniteMissileTimer - a_deltaTime);
+    terrainHitCooldown = std::max(0.0f, terrainHitCooldown - a_deltaTime);
+    progressLogTimer = std::max(0.0f, progressLogTimer - a_deltaTime);
 
     resolve_player();
-    update_terrain_segments(dt);
-    update_terrain_collisions(dt);
-    update_convert_field(dt);
-    update_infinite_missile(dt);
+    update_stage_phase();
+    update_terrain_segments(a_deltaTime);
+    update_terrain_collisions(a_deltaTime);
+    update_convert_field(a_deltaTime);
+    update_infinite_missile(a_deltaTime);
     update_player_status_visual();
-    update_lock_on(dt);
+    update_lock_on(a_deltaTime);
     update_lock_visuals();
-    update_combat(dt);
-    update_spawning(dt);
-    update_missiles(dt);
-    update_enemy_missiles(dt);
-    update_large_missiles(dt);
-    update_enemies(dt);
+    update_combat(a_deltaTime);
+    update_spawning(a_deltaTime);
+    update_missiles(a_deltaTime);
+    update_enemy_bullets(a_deltaTime);
+    update_enemy_missiles(a_deltaTime);
+    update_large_missiles(a_deltaTime);
+    update_enemies(a_deltaTime);
     update_salvage();
     cleanup_behind_player();
     log_progress();
+}
+
+void GameManager::reset_gameplay_state()
+{
+    score = 0;
+    salvageCount = 0;
+    reverseMissileAmmo = 0;
+    armorCount = 0;
+    playerHull = std::max(1, playerHullMax);
+    spawnIndex = 0u;
+    elapsedTime = 0.0f;
+    progressLogTimer = 0.0f;
+    machineGunTimer = 0.0f;
+    missileFireTimer = 0.0f;
+    terrainHitCooldown = 0.0f;
+    enemySpawnTimer = 0.0f;
+    normalBulletSpawnTimer = 1.0f;
+    enemyMissileSpawnTimer = 0.35f;
+    largeMissileSpawnTimer = 2.4f;
+    salvageSpawnTimer = 0.65f;
+    reverseMissileStateTimer = 0.0f;
+    sonicStreamTimer = 0.0f;
+    armorStateTimer = 0.0f;
+    infiniteMissileTimer = 0.0f;
+    fieldGauge = std::max(0.0f, fieldMaxGauge);
+    terrainNextEntryZ = 0.0f;
+    pendingGameOver = false;
+    pendingResult = false;
+    hasLoggedInfiniteReady = false;
+    isPlayerStatusVisualActive = false;
+    hasSpawnedBoss = false;
+    bossCoreExposed = false;
+    bossPartsDestroyed = 0;
+    bossAttackStep = 0;
+    stagePhase = StagePhase::Launch;
+    bossAttackTimer = 1.0f;
+}
+
+void GameManager::update_stage_phase()
+{
+    const StagePhase nextPhase = phase_for_time(elapsedTime);
+    if (nextPhase == stagePhase)
+    {
+        return;
+    }
+
+    stagePhase = nextPhase;
+    switch (stagePhase)
+    {
+    case StagePhase::Launch:
+        log_info("Stage phase: Launch.");
+        break;
+    case StagePhase::EnemyFormation:
+        log_info("Stage phase: Enemy formation.");
+        break;
+    case StagePhase::SmallMissileIntro:
+        log_info("Stage phase: Small missile intro.");
+        break;
+    case StagePhase::SalvageIntro:
+        log_info("Stage phase: Salvage intro.");
+        break;
+    case StagePhase::LargeMissileIntro:
+        log_info("Stage phase: Large missile intro.");
+        break;
+    case StagePhase::CombineStates:
+        log_info("Stage phase: Combine states.");
+        break;
+    case StagePhase::MissileInfinity:
+        log_info("Stage phase: Missile infinity.");
+        break;
+    case StagePhase::Boss:
+        log_info("Stage phase: Boss.");
+        break;
+    }
+}
+
+GameManager::StagePhase GameManager::phase_for_time(
+    float a_elapsedTime) const noexcept
+{
+    const float bossStart = std::max(1.0f, stageDuration);
+    if (a_elapsedTime >= bossStart)
+    {
+        return StagePhase::Boss;
+    }
+    if (a_elapsedTime >= bossStart * 0.78f)
+    {
+        return StagePhase::MissileInfinity;
+    }
+    if (a_elapsedTime >= bossStart * 0.62f)
+    {
+        return StagePhase::CombineStates;
+    }
+    if (a_elapsedTime >= bossStart * 0.48f)
+    {
+        return StagePhase::LargeMissileIntro;
+    }
+    if (a_elapsedTime >= bossStart * 0.34f)
+    {
+        return StagePhase::SalvageIntro;
+    }
+    if (a_elapsedTime >= bossStart * 0.20f)
+    {
+        return StagePhase::SmallMissileIntro;
+    }
+    if (a_elapsedTime >= bossStart * 0.08f)
+    {
+        return StagePhase::EnemyFormation;
+    }
+    return StagePhase::Launch;
+}
+
+void GameManager::reset_player_transform() const
+{
+    if (playerEntity.value == k_cueInvalidHandleValue)
+    {
+        return;
+    }
+
+    Marionette::Transform transform{};
+    if (get_transform(playerEntity, transform) != CueResult_Ok)
+    {
+        return;
+    }
+
+    transform.position = { 0.0f, 0.0f, 0.0f };
+    transform.rotation = { 0.0f, 0.0f, 0.0f };
+    transform.scale = { 1.0f, 1.0f, 1.0f };
+    (void)set_transform(playerEntity, transform);
+}
+
+void GameManager::clear_dynamic_entities()
+{
+    deactivate_convert_field();
+
+    for (const Missile& missile : missiles)
+    {
+        destroy_entity_safe(missile.entity);
+    }
+    missiles.clear();
+
+    for (const EnemyBullet& bullet : enemyBullets)
+    {
+        destroy_entity_safe(bullet.entity);
+    }
+    enemyBullets.clear();
+
+    for (const EnemyMissile& missile : enemyMissiles)
+    {
+        destroy_entity_safe(missile.entity);
+    }
+    enemyMissiles.clear();
+
+    for (const LargeMissile& missile : largeMissiles)
+    {
+        destroy_entity_safe(missile.entity);
+    }
+    largeMissiles.clear();
+
+    for (const Enemy& enemy : enemies)
+    {
+        destroy_entity_safe(enemy.entity);
+    }
+    enemies.clear();
+
+    for (const Salvage& salvage : salvages)
+    {
+        destroy_entity_safe(salvage.entity);
+    }
+    salvages.clear();
+
+    for (ActiveTerrainSegment& segment : activeTerrainSegments)
+    {
+        destroy_terrain_segment(segment);
+    }
+    activeTerrainSegments.clear();
+
+    lockedEnemies.clear();
+    visualLockedEnemies.clear();
+}
+
+void GameManager::ensure_flow_ui()
+{
+    if (uiCanvasEntity.value != k_cueInvalidHandleValue)
+    {
+        Marionette::Transform transform{};
+        if (get_transform(uiCanvasEntity, transform) == CueResult_Ok)
+        {
+            return;
+        }
+    }
+
+    destroy_flow_ui();
+
+    CueEntityHandle canvas{ k_cueInvalidHandleValue };
+    if (spawn_object(
+            make_spawn_desc(
+                Marionette::SpawnObjectKindEmpty,
+                "FlowCanvas",
+                "FlowUi",
+                make_transform(
+                    { 0.0f, 0.0f, 0.0f },
+                    { 1.0f, 1.0f, 1.0f })),
+            canvas) != CueResult_Ok)
+    {
+        return;
+    }
+
+    (void)add_or_set_component(
+        canvas,
+        Marionette::ComponentKindCanvas,
+        make_canvas());
+    (void)add_or_set_component(
+        canvas,
+        Marionette::ComponentKindUiRectTransform,
+        make_ui_rect(
+            { 0.0f, 0.0f },
+            { 1.0f, 1.0f },
+            { 0.0f, 0.0f },
+            { 0.0f, 0.0f },
+            { 0.0f, 0.0f }));
+    uiCanvasEntity = canvas;
+
+    uiTitleEntity = spawn_ui_text(
+        "FlowTitle",
+        -220.0f,
+        150.0f,
+        82u,
+        20u,
+        k_uiTitleColor);
+    uiBodyEntity = spawn_ui_text(
+        "FlowBody",
+        -40.0f,
+        280.0f,
+        34u,
+        21u,
+        k_uiBodyColor);
+    uiHudEntity = spawn_ui_text(
+        "FlowHud",
+        34.0f,
+        84.0f,
+        28u,
+        22u,
+        k_uiHudColor);
+}
+
+void GameManager::update_flow_ui()
+{
+    ensure_flow_ui();
+
+    char body[512]{};
+    char hud[256]{};
+    switch (flowState)
+    {
+    case FlowState::Title:
+        set_ui_text(
+            uiTitleEntity,
+            "BorroWing",
+            82u,
+            20u,
+            k_uiTitleColor);
+        set_ui_text(
+            uiBodyEntity,
+            "Press ENTER or SPACE to start\nWASD / Arrow: Move  Space: Gun  Right Mouse: Missile\nE: Convert Field  R: Infinite Missile",
+            30u,
+            21u,
+            k_uiBodyColor);
+        set_ui_text(uiHudEntity, "", 24u, 22u, k_uiHudColor);
+        return;
+    case FlowState::Playing:
+        (void)std::snprintf(
+            hud,
+            sizeof(hud),
+            "Score %d   Hull %d/%d   Armor %d   Salvage %d   Time %.0f/%.0f",
+            score,
+            playerHull,
+            std::max(1, playerHullMax),
+            armorCount,
+            salvageCount,
+            elapsedTime,
+            std::max(1.0f, stageDuration));
+        set_ui_text(uiTitleEntity, "", 24u, 20u, k_uiTitleColor);
+        set_ui_text(uiBodyEntity, "", 24u, 21u, k_uiBodyColor);
+        set_ui_text(uiHudEntity, hud, 26u, 22u, k_uiHudColor);
+        return;
+    case FlowState::GameOver:
+        (void)std::snprintf(
+            body,
+            sizeof(body),
+            "Score %d\nSurvival Time %.1f sec\nPress ENTER or SPACE to retry\nPress ESC for title",
+            score,
+            elapsedTime);
+        set_ui_text(
+            uiTitleEntity,
+            "GAME OVER",
+            76u,
+            20u,
+            k_uiWarningColor);
+        set_ui_text(uiBodyEntity, body, 34u, 21u, k_uiBodyColor);
+        set_ui_text(uiHudEntity, "", 24u, 22u, k_uiHudColor);
+        return;
+    case FlowState::Result:
+        (void)std::snprintf(
+            body,
+            sizeof(body),
+            "Score %d\nSalvage %d   Armor %d\nPress ENTER or SPACE to play again\nPress ESC for title",
+            score,
+            salvageCount,
+            armorCount);
+        set_ui_text(uiTitleEntity, "RESULT", 76u, 20u, k_uiResultColor);
+        set_ui_text(uiBodyEntity, body, 34u, 21u, k_uiBodyColor);
+        set_ui_text(uiHudEntity, "", 24u, 22u, k_uiHudColor);
+        return;
+    }
+}
+
+void GameManager::destroy_flow_ui()
+{
+    destroy_entity_safe(uiTitleEntity);
+    destroy_entity_safe(uiBodyEntity);
+    destroy_entity_safe(uiHudEntity);
+    destroy_entity_safe(uiCanvasEntity);
+    uiTitleEntity = CueEntityHandle{ k_cueInvalidHandleValue };
+    uiBodyEntity = CueEntityHandle{ k_cueInvalidHandleValue };
+    uiHudEntity = CueEntityHandle{ k_cueInvalidHandleValue };
+    uiCanvasEntity = CueEntityHandle{ k_cueInvalidHandleValue };
+}
+
+CueEntityHandle GameManager::spawn_ui_text(
+    const char* a_name,
+    float a_y,
+    float a_height,
+    uint32_t a_fontSize,
+    uint32_t a_order,
+    const Marionette::Color& a_color)
+{
+    CueEntityHandle entity{ k_cueInvalidHandleValue };
+    if (uiCanvasEntity.value == k_cueInvalidHandleValue)
+    {
+        return entity;
+    }
+
+    if (spawn_object(
+            make_spawn_desc(
+                Marionette::SpawnObjectKindEmpty,
+                a_name,
+                "FlowUi",
+                make_transform(
+                    { 0.0f, 0.0f, 0.0f },
+                    { 1.0f, 1.0f, 1.0f })),
+            entity) != CueResult_Ok)
+    {
+        return CueEntityHandle{ k_cueInvalidHandleValue };
+    }
+
+    (void)add_or_set_component(
+        entity,
+        Marionette::ComponentKindUiRectTransform,
+        make_ui_rect(
+            { 0.5f, 0.5f },
+            { 0.5f, 0.5f },
+            { 0.5f, 0.5f },
+            { 0.0f, a_y },
+            { 1500.0f, a_height }));
+    set_ui_text(entity, "", a_fontSize, a_order, a_color);
+    (void)set_parent(entity, uiCanvasEntity, false);
+    return entity;
+}
+
+void GameManager::set_ui_text(
+    CueEntityHandle a_entity,
+    std::string_view a_text,
+    uint32_t a_fontSize,
+    uint32_t a_order,
+    const Marionette::Color& a_color) const
+{
+    if (a_entity.value == k_cueInvalidHandleValue)
+    {
+        return;
+    }
+
+    (void)add_or_set_component(
+        a_entity,
+        Marionette::ComponentKindTextRenderer,
+        make_text_renderer(a_text, a_fontSize, a_order, a_color));
+}
+
+void GameManager::register_player_hit(int a_scorePenalty)
+{
+    if (consume_armor())
+    {
+        return;
+    }
+
+    score = std::max(0, score - std::max(0, a_scorePenalty));
+    playerHull = std::max(0, playerHull - 1);
+    if (playerHull <= 0)
+    {
+        pendingGameOver = true;
+    }
 }
 
 void GameManager::resolve_player()
@@ -778,7 +1447,8 @@ void GameManager::update_lock_on(float)
     for (const Enemy& enemy : enemies)
     {
         if (enemy.entity.value == k_cueInvalidHandleValue ||
-            is_locked(enemy.entity))
+            is_locked(enemy.entity) ||
+            (enemy.kind == EnemyKind::BossCore && !bossCoreExposed))
         {
             continue;
         }
@@ -1306,10 +1976,7 @@ void GameManager::update_terrain_collisions(float)
                 continue;
             }
 
-            if (!consume_armor())
-            {
-                score = std::max(0, score - 50);
-            }
+            register_player_hit(50);
             terrainHitCooldown = 1.0f;
             log_info("Player hit grand canyon terrain.");
             return;
@@ -1331,25 +1998,82 @@ void GameManager::update_spawning(float a_deltaTime)
     }
 
     enemySpawnTimer -= a_deltaTime;
+    normalBulletSpawnTimer -= a_deltaTime;
     enemyMissileSpawnTimer -= a_deltaTime;
     largeMissileSpawnTimer -= a_deltaTime;
     salvageSpawnTimer -= a_deltaTime;
-    if (enemySpawnTimer <= 0.0f && enemies.size() < 12u)
+
+    if (stagePhase == StagePhase::Boss)
     {
-        spawn_enemy(playerTransform.position.z);
+        if (!hasSpawnedBoss)
+        {
+            spawn_boss(playerTransform.position.z);
+            hasSpawnedBoss = true;
+        }
+
+        bossAttackTimer -= a_deltaTime;
+        if (bossAttackTimer <= 0.0f)
+        {
+            run_boss_attack_pattern(playerTransform);
+        }
+        return;
+    }
+
+    const uint8_t phaseValue = static_cast<uint8_t>(stagePhase);
+    const bool spawnEnemies =
+        phaseValue >= static_cast<uint8_t>(StagePhase::EnemyFormation);
+    const bool spawnSmallMissiles =
+        phaseValue >= static_cast<uint8_t>(StagePhase::SmallMissileIntro);
+    const bool spawnSalvage =
+        phaseValue >= static_cast<uint8_t>(StagePhase::SalvageIntro);
+    const bool spawnLargeMissiles =
+        phaseValue >= static_cast<uint8_t>(StagePhase::LargeMissileIntro);
+    const bool spawnNormalBullets =
+        phaseValue >= static_cast<uint8_t>(StagePhase::EnemyFormation);
+
+    if (spawnEnemies && enemySpawnTimer <= 0.0f && enemies.size() < 12u)
+    {
+        if (phaseValue >= static_cast<uint8_t>(StagePhase::LargeMissileIntro) &&
+            spawnIndex % 5u == 0u)
+        {
+            spawn_enemy_kind(EnemyKind::HeavyCarrier, playerTransform.position.z);
+        }
+        else if (
+            phaseValue >= static_cast<uint8_t>(StagePhase::SmallMissileIntro) &&
+            spawnIndex % 3u == 0u)
+        {
+            spawn_enemy_kind(
+                EnemyKind::MissileCarrier,
+                playerTransform.position.z);
+        }
+        else
+        {
+            spawn_enemy(playerTransform.position.z);
+        }
         enemySpawnTimer = std::max(0.2f, enemySpawnInterval);
     }
-    if (enemyMissileSpawnTimer <= 0.0f && enemyMissiles.size() < 14u)
+    if (spawnNormalBullets &&
+        normalBulletSpawnTimer <= 0.0f &&
+        enemyBullets.size() < 12u)
+    {
+        spawn_enemy_bullet(playerTransform);
+        normalBulletSpawnTimer = std::max(0.35f, normalBulletSpawnInterval);
+    }
+    if (spawnSmallMissiles &&
+        enemyMissileSpawnTimer <= 0.0f &&
+        enemyMissiles.size() < 14u)
     {
         spawn_enemy_missile(playerTransform);
         enemyMissileSpawnTimer = std::max(0.25f, enemyMissileSpawnInterval);
     }
-    if (largeMissileSpawnTimer <= 0.0f && largeMissiles.size() < 4u)
+    if (spawnLargeMissiles &&
+        largeMissileSpawnTimer <= 0.0f &&
+        largeMissiles.size() < 4u)
     {
         spawn_large_missile(playerTransform);
         largeMissileSpawnTimer = std::max(1.0f, largeMissileSpawnInterval);
     }
-    if (salvageSpawnTimer <= 0.0f && salvages.size() < 8u)
+    if (spawnSalvage && salvageSpawnTimer <= 0.0f && salvages.size() < 8u)
     {
         spawn_salvage(playerTransform.position.z);
         salvageSpawnTimer = std::max(0.5f, salvageSpawnInterval);
@@ -1421,13 +2145,47 @@ void GameManager::update_missiles(float a_deltaTime)
             {
                 destroy_entity_safe(missile.entity);
                 missile.entity = CueEntityHandle{ k_cueInvalidHandleValue };
+                if (enemy.kind == EnemyKind::BossCore && !bossCoreExposed)
+                {
+                    break;
+                }
+
                 enemy.hp -= missile.damage;
                 if (enemy.hp <= 0)
                 {
                     spawn_salvage_at(enemyTransform.position);
                     destroy_entity_safe(enemy.entity);
                     enemy.entity = CueEntityHandle{ k_cueInvalidHandleValue };
-                    score += 100;
+                    if (enemy.kind == EnemyKind::BossPart)
+                    {
+                        ++bossPartsDestroyed;
+                        score += 500;
+                        if (bossPartsDestroyed >= 2)
+                        {
+                            bossCoreExposed = true;
+                            for (const Enemy& candidate : enemies)
+                            {
+                                if (candidate.kind == EnemyKind::BossCore &&
+                                    candidate.entity.value !=
+                                        k_cueInvalidHandleValue)
+                                {
+                                    (void)set_material_color(
+                                        candidate.entity,
+                                        k_bossColor);
+                                }
+                            }
+                            log_info("Boss core exposed.");
+                        }
+                    }
+                    else if (enemy.kind == EnemyKind::BossCore)
+                    {
+                        score += 2500;
+                        pendingResult = true;
+                    }
+                    else
+                    {
+                        score += 100;
+                    }
                 }
                 break;
             }
@@ -1452,6 +2210,69 @@ void GameManager::update_missiles(float a_deltaTime)
                 return false;
             }),
         missiles.end());
+}
+
+void GameManager::update_enemy_bullets(float a_deltaTime)
+{
+    for (EnemyBullet& bullet : enemyBullets)
+    {
+        Marionette::Transform transform{};
+        if (get_transform(bullet.entity, transform) != CueResult_Ok)
+        {
+            bullet.entity = CueEntityHandle{ k_cueInvalidHandleValue };
+            continue;
+        }
+
+        bullet.age += a_deltaTime;
+        transform.position = add(
+            transform.position,
+            scale(
+                normalize_or_forward(bullet.direction),
+                normalBulletSpeed * a_deltaTime));
+        transform.position.z -=
+            std::max(0.0f, worldScrollSpeed) * a_deltaTime;
+        (void)set_transform(bullet.entity, transform);
+
+        if (playerEntity.value == k_cueInvalidHandleValue)
+        {
+            continue;
+        }
+
+        Marionette::Transform playerTransform{};
+        if (get_transform(playerEntity, playerTransform) != CueResult_Ok)
+        {
+            continue;
+        }
+
+        constexpr float k_playerRadius = 1.0f;
+        const float hitRadius = bullet.radius + k_playerRadius;
+        if (distance_sq(transform.position, playerTransform.position) <=
+            hitRadius * hitRadius)
+        {
+            register_player_hit(20);
+            destroy_entity_safe(bullet.entity);
+            bullet.entity = CueEntityHandle{ k_cueInvalidHandleValue };
+        }
+    }
+
+    enemyBullets.erase(
+        std::remove_if(
+            enemyBullets.begin(),
+            enemyBullets.end(),
+            [this](const EnemyBullet& a_bullet)
+            {
+                if (a_bullet.entity.value == k_cueInvalidHandleValue)
+                {
+                    return true;
+                }
+                if (a_bullet.age > 5.0f)
+                {
+                    destroy_entity_safe(a_bullet.entity);
+                    return true;
+                }
+                return false;
+            }),
+        enemyBullets.end());
 }
 
 void GameManager::update_enemy_missiles(float a_deltaTime)
@@ -1486,7 +2307,7 @@ void GameManager::update_enemy_missiles(float a_deltaTime)
                 if (distance_sq(transform.position, playerTransform.position) <=
                     hitRadius * hitRadius)
                 {
-                    (void)consume_armor();
+                    register_player_hit(25);
                     destroy_entity_safe(missile.entity);
                     missile.entity =
                         CueEntityHandle{ k_cueInvalidHandleValue };
@@ -1549,7 +2370,7 @@ void GameManager::update_large_missiles(float a_deltaTime)
                 if (distance_sq(transform.position, playerTransform.position) <=
                     hitRadius * hitRadius)
                 {
-                    (void)consume_armor();
+                    register_player_hit(50);
                     destroy_entity_safe(missile.entity);
                     missile.entity =
                         CueEntityHandle{ k_cueInvalidHandleValue };
@@ -1590,9 +2411,21 @@ void GameManager::update_enemies(float a_deltaTime)
             continue;
         }
 
-        transform.position.z -=
-            (std::max(0.0f, worldScrollSpeed) + 5.0f) * a_deltaTime;
-        transform.rotation.z += 1.1f * a_deltaTime;
+        if (enemy.kind == EnemyKind::BossPart ||
+            enemy.kind == EnemyKind::BossCore)
+        {
+            transform.position.z = std::max(
+                34.0f,
+                transform.position.z -
+                    std::max(0.0f, worldScrollSpeed) * 0.35f * a_deltaTime);
+            transform.rotation.z += 0.25f * a_deltaTime;
+        }
+        else
+        {
+            transform.position.z -=
+                (std::max(0.0f, worldScrollSpeed) + 5.0f) * a_deltaTime;
+            transform.rotation.z += 1.1f * a_deltaTime;
+        }
         (void)set_transform(enemy.entity, transform);
     }
 
@@ -1656,6 +2489,11 @@ void GameManager::cleanup_behind_player()
             enemies.end(),
             [this, cleanupZ](const Enemy& a_enemy)
             {
+                if (a_enemy.kind == EnemyKind::BossPart ||
+                    a_enemy.kind == EnemyKind::BossCore)
+                {
+                    return false;
+                }
                 Marionette::Transform transform{};
                 if (get_transform(a_enemy.entity, transform) != CueResult_Ok ||
                     transform.position.z < cleanupZ)
@@ -1666,6 +2504,23 @@ void GameManager::cleanup_behind_player()
                 return false;
             }),
         enemies.end());
+
+    enemyBullets.erase(
+        std::remove_if(
+            enemyBullets.begin(),
+            enemyBullets.end(),
+            [this, cleanupZ](const EnemyBullet& a_bullet)
+            {
+                Marionette::Transform transform{};
+                if (get_transform(a_bullet.entity, transform) != CueResult_Ok ||
+                    transform.position.z < cleanupZ)
+                {
+                    destroy_entity_safe(a_bullet.entity);
+                    return true;
+                }
+                return false;
+            }),
+        enemyBullets.end());
 
     salvages.erase(
         std::remove_if(
@@ -1783,6 +2638,10 @@ void GameManager::spawn_missile(
 
     (void)add_or_set_component(
         entity,
+        Marionette::ComponentKindMeshFilter,
+        make_mesh_filter("missile"));
+    (void)add_or_set_component(
+        entity,
         Marionette::ComponentKindStaticMeshRenderer,
         make_renderer(0u, 0u));
     (void)add_or_set_component(
@@ -1811,6 +2670,11 @@ void GameManager::spawn_missile(
 
 void GameManager::spawn_enemy(float a_playerZ)
 {
+    spawn_enemy_kind(EnemyKind::Fighter, a_playerZ);
+}
+
+void GameManager::spawn_enemy_kind(EnemyKind a_kind, float a_playerZ)
+{
     const float laneX =
         static_cast<float>(static_cast<int>(spawnIndex % 5u) - 2) * 2.2f;
     const float laneY =
@@ -1818,18 +2682,47 @@ void GameManager::spawn_enemy(float a_playerZ)
         1.15f;
     ++spawnIndex;
 
+    CueFloat3 scale{ 1.25f, 0.75f, 1.25f };
+    float radius = 1.05f;
+    int hp = 1;
+    Marionette::Color color = k_lockedEnemyColor;
+    const char* name = "Enemy";
+    const char* tag = "Enemy";
+    if (a_kind == EnemyKind::MissileCarrier)
+    {
+        scale = { 1.45f, 0.85f, 1.55f };
+        radius = 1.25f;
+        hp = 2;
+        color = k_missileCarrierColor;
+        name = "MissileCarrier";
+        tag = "MissileCarrier";
+    }
+    else if (a_kind == EnemyKind::HeavyCarrier)
+    {
+        scale = { 1.9f, 1.05f, 2.0f };
+        radius = 1.55f;
+        hp = 3;
+        color = k_heavyCarrierColor;
+        name = "HeavyCarrier";
+        tag = "HeavyCarrier";
+    }
+
     Marionette::Transform transform = make_transform(
         { laneX, laneY, a_playerZ + spawnLeadDistance },
-        { 1.25f, 0.75f, 1.25f });
+        scale);
 
     CueEntityHandle entity{ k_cueInvalidHandleValue };
     if (spawn_object(
-            make_spawn_desc("Enemy", "Enemy", transform),
+            make_spawn_desc(name, tag, transform),
             entity) != CueResult_Ok)
     {
         return;
     }
 
+    (void)add_or_set_component(
+        entity,
+        Marionette::ComponentKindMeshFilter,
+        make_mesh_filter("f16"));
     (void)add_or_set_component(
         entity,
         Marionette::ComponentKindStaticMeshRenderer,
@@ -1838,7 +2731,163 @@ void GameManager::spawn_enemy(float a_playerZ)
         entity,
         Marionette::ComponentKindCollider,
         make_box_trigger({ 0.7f, 0.7f, 0.7f }));
-    enemies.push_back(Enemy{ entity, 1.05f, 1 });
+    if (a_kind != EnemyKind::Fighter)
+    {
+        (void)set_material_color(entity, color);
+    }
+    enemies.push_back(Enemy{ entity, radius, hp, a_kind });
+}
+
+void GameManager::spawn_boss(float a_playerZ)
+{
+    const float bossZ = a_playerZ + spawnLeadDistance + 18.0f;
+    const auto spawnBossObject =
+        [this](
+            const char* a_name,
+            const CueFloat3& a_position,
+            const CueFloat3& a_scale,
+            const CueFloat3& a_colliderHalfExtent,
+            float a_radius,
+            int a_hp,
+            EnemyKind a_kind,
+            const Marionette::Color& a_color)
+        {
+            CueEntityHandle entity{ k_cueInvalidHandleValue };
+            if (spawn_object(
+                    make_spawn_desc(
+                        a_name,
+                        a_kind == EnemyKind::BossCore ? "BossCore" : "BossPart",
+                        make_transform(a_position, a_scale)),
+                    entity) != CueResult_Ok)
+            {
+                return;
+            }
+
+            (void)add_or_set_component(
+                entity,
+                Marionette::ComponentKindMeshFilter,
+                make_mesh_filter("f16"));
+            (void)add_or_set_component(
+                entity,
+                Marionette::ComponentKindStaticMeshRenderer,
+                make_renderer(1u, 1u));
+            (void)add_or_set_component(
+                entity,
+                Marionette::ComponentKindCollider,
+                make_box_trigger(a_colliderHalfExtent));
+            (void)set_material_color(entity, a_color);
+            enemies.push_back(Enemy{ entity, a_radius, a_hp, a_kind });
+        };
+
+    spawnBossObject(
+        "BossLeftWing",
+        { -3.1f, 0.0f, bossZ - 1.0f },
+        { 2.6f, 0.75f, 2.8f },
+        { 1.8f, 0.55f, 1.9f },
+        2.2f,
+        12,
+        EnemyKind::BossPart,
+        k_bossPartColor);
+    spawnBossObject(
+        "BossRightWing",
+        { 3.1f, 0.0f, bossZ - 1.0f },
+        { 2.6f, 0.75f, 2.8f },
+        { 1.8f, 0.55f, 1.9f },
+        2.2f,
+        12,
+        EnemyKind::BossPart,
+        k_bossPartColor);
+    spawnBossObject(
+        "BossCore",
+        { 0.0f, 0.15f, bossZ },
+        { 3.1f, 1.25f, 4.4f },
+        { 2.2f, 0.9f, 3.1f },
+        3.3f,
+        32,
+        EnemyKind::BossCore,
+        k_bossCoreLockedColor);
+
+    bossCoreExposed = false;
+    bossPartsDestroyed = 0;
+    bossAttackStep = 0;
+    bossAttackTimer = 1.0f;
+}
+
+void GameManager::run_boss_attack_pattern(
+    const Marionette::Transform& a_playerTransform)
+{
+    switch (bossAttackStep % 4u)
+    {
+    case 0u:
+        spawn_enemy_bullet(a_playerTransform);
+        spawn_enemy_bullet(a_playerTransform);
+        bossAttackTimer = 0.75f;
+        break;
+    case 1u:
+        spawn_enemy_missile(a_playerTransform);
+        spawn_enemy_missile(a_playerTransform);
+        bossAttackTimer = 1.15f;
+        break;
+    case 2u:
+        spawn_large_missile(a_playerTransform);
+        bossAttackTimer = 1.7f;
+        break;
+    default:
+        spawn_enemy_bullet(a_playerTransform);
+        spawn_enemy_missile(a_playerTransform);
+        if (bossCoreExposed)
+        {
+            spawn_large_missile(a_playerTransform);
+        }
+        bossAttackTimer = bossCoreExposed ? 0.9f : 1.25f;
+        break;
+    }
+    ++bossAttackStep;
+}
+
+void GameManager::spawn_enemy_bullet(
+    const Marionette::Transform& a_playerTransform)
+{
+    const float laneX =
+        static_cast<float>(static_cast<int>((spawnIndex + 5u) % 5u) - 2) *
+        1.5f;
+    const float laneY =
+        static_cast<float>(static_cast<int>((spawnIndex + 4u) % 3u) - 1) *
+        0.9f;
+    ++spawnIndex;
+
+    Marionette::Transform transform = make_transform(
+        {
+            laneX,
+            laneY,
+            a_playerTransform.position.z + spawnLeadDistance * 0.45f,
+        },
+        { 0.34f, 0.34f, 0.34f });
+
+    CueEntityHandle entity{ k_cueInvalidHandleValue };
+    if (spawn_object(
+            make_spawn_desc("EnemyNormalBullet", "EnemyBullet", transform),
+            entity) != CueResult_Ok)
+    {
+        return;
+    }
+
+    (void)add_or_set_component(
+        entity,
+        Marionette::ComponentKindStaticMeshRenderer,
+        make_renderer(0u, 0u));
+    (void)add_or_set_component(
+        entity,
+        Marionette::ComponentKindCollider,
+        make_box_trigger({ 0.22f, 0.22f, 0.22f }));
+    (void)set_material_color(entity, k_enemyBulletColor);
+
+    enemyBullets.push_back(EnemyBullet{
+        entity,
+        normalize_or_forward(
+            subtract(a_playerTransform.position, transform.position)),
+        0.32f,
+        0.0f });
 }
 
 void GameManager::spawn_enemy_missile(
@@ -1867,6 +2916,10 @@ void GameManager::spawn_enemy_missile(
         return;
     }
 
+    (void)add_or_set_component(
+        entity,
+        Marionette::ComponentKindMeshFilter,
+        make_mesh_filter("missile"));
     (void)add_or_set_component(
         entity,
         Marionette::ComponentKindStaticMeshRenderer,
@@ -1911,6 +2964,10 @@ void GameManager::spawn_large_missile(
         return;
     }
 
+    (void)add_or_set_component(
+        entity,
+        Marionette::ComponentKindMeshFilter,
+        make_mesh_filter("missile"));
     (void)add_or_set_component(
         entity,
         Marionette::ComponentKindStaticMeshRenderer,

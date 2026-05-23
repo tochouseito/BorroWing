@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "BorroWingGameState.h"
+
 void PlayerFlight::bind_fields(const Marionette::ScriptFieldReader& a_reader)
 {
     (void)read_float(a_reader, "railSpeed", railSpeed);
@@ -43,6 +45,25 @@ void PlayerFlight::update()
 {
     if (!is_entity_valid() || !has_transform())
     {
+        return;
+    }
+
+    if (observedResetSerial != BorroWing::player_reset_serial())
+    {
+        observedResetSerial = BorroWing::player_reset_serial();
+        Transform transform{};
+        if (get_transform(transform) == CueResult_Ok)
+        {
+            railDistance = 0.0f;
+            offsetX = transform.position.x;
+            offsetY = transform.position.y;
+            currentTilt = 0.0f;
+        }
+    }
+
+    if (!BorroWing::is_gameplay_active())
+    {
+        update_camera();
         return;
     }
 

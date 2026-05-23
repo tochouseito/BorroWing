@@ -2,6 +2,7 @@
 
 #include "Scripts/GameManagerScript.h"
 #include "Scripts/PlayerFlightScript.h"
+#include "Scripts/SceneMenuScript.h"
 
 // === C++ includes ===
 #include <array>
@@ -12,9 +13,10 @@
 
 namespace
 {
-    const std::array<Cue::Core::Native::ScriptClassDefinition, 2> k_scriptClasses = {
+    const std::array<Cue::Core::Native::ScriptClassDefinition, 3> k_scriptClasses = {
         make_game_manager_script_definition(),
         make_player_flight_script_definition(),
+        make_scene_menu_script_definition(),
     };
 }
 
