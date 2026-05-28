@@ -54,8 +54,21 @@
       "randomConnectSafe": true,
       "visualAssetType": "obj",
       "visualModelName": "grand_canyon_d_straight_no_obstacle"
+    },
+    {
+      "id": "normal_stage_field",
+      "label": "NormalField",
+      "prefix": "_nf_",
+      "visualAsset": "../Models/normal_stage_field.obj",
+      "metadata": "normal_stage_field.json",
+      "length": 80.0,
+      "hasObstacles": false,
+      "curve": "straight_fast",
+      "randomConnectSafe": true,
+      "visualAssetType": "obj",
+      "visualModelName": "normal_stage_field"
     }
   ],
-  "segmentCount": 4,
+  "segmentCount": 5,
   "visualCoordinateSystem": "OBJ direct Blender export, Engine import handles orientation"
 }

@@ -15,87 +15,46 @@ namespace
     uint32_t g_playerResetSerial = 0u;
     BorroWing::RunSummary g_lastRunSummary{};
 
-    constexpr Marionette::Color k_lockedEnemyColor{
-        0.1f, 0.85f, 1.0f, 1.0f
-    };
-    constexpr Marionette::Color k_convertFieldColor{
-        0.2f, 0.75f, 1.0f, 0.24f
-    };
-    constexpr Marionette::Color k_fieldTargetColor{
-        0.35f, 1.0f, 0.45f, 1.0f
-    };
-    constexpr Marionette::Color k_salvageColor{
-        0.15f, 0.95f, 0.28f, 1.0f
-    };
-    constexpr Marionette::Color k_playerMissileColor{
-        0.78f, 0.92f, 1.0f, 1.0f
-    };
-    constexpr Marionette::Color k_machineGunColor{
-        1.0f, 0.94f, 0.45f, 1.0f
-    };
-    constexpr Marionette::Color k_reverseMissileColor{
-        0.15f, 1.0f, 0.72f, 1.0f
-    };
-    constexpr Marionette::Color k_enemyMissileColor{
-        1.0f, 0.22f, 0.12f, 1.0f
-    };
-    constexpr Marionette::Color k_enemyBulletColor{
-        1.0f, 0.05f, 0.08f, 1.0f
-    };
-    constexpr Marionette::Color k_largeMissileColor{
-        0.78f, 0.18f, 1.0f, 1.0f
-    };
-    constexpr Marionette::Color k_bossColor{
-        0.95f, 0.1f, 0.22f, 1.0f
-    };
-    constexpr Marionette::Color k_bossPartColor{
-        0.95f, 0.42f, 0.16f, 1.0f
-    };
-    constexpr Marionette::Color k_bossCoreLockedColor{
-        0.24f, 0.24f, 0.28f, 1.0f
-    };
-    constexpr Marionette::Color k_missileCarrierColor{
-        0.22f, 0.75f, 1.0f, 1.0f
-    };
-    constexpr Marionette::Color k_heavyCarrierColor{
-        0.86f, 0.22f, 1.0f, 1.0f
-    };
-    constexpr Marionette::Color k_sonicStreamColor{
-        0.12f, 0.55f, 1.0f, 1.0f
-    };
-    constexpr Marionette::Color k_armorColor{
-        1.0f, 0.78f, 0.18f, 1.0f
-    };
-    constexpr Marionette::Color k_infiniteMissileColor{
-        1.0f, 0.25f, 0.9f, 1.0f
-    };
-    constexpr Marionette::Color k_uiTitleColor{
-        0.82f, 0.95f, 1.0f, 1.0f
-    };
-    constexpr Marionette::Color k_uiBodyColor{
-        0.94f, 0.94f, 0.9f, 1.0f
-    };
-    constexpr Marionette::Color k_uiWarningColor{
-        1.0f, 0.32f, 0.22f, 1.0f
-    };
-    constexpr Marionette::Color k_uiResultColor{
-        0.35f, 1.0f, 0.68f, 1.0f
-    };
-    constexpr Marionette::Color k_uiHudColor{
-        0.84f, 0.92f, 1.0f, 1.0f
-    };
+    constexpr Marionette::Color k_lockedEnemyColor{ 0.1f, 0.85f, 1.0f, 1.0f };
+    constexpr Marionette::Color k_convertFieldColor{ 0.2f, 0.75f, 1.0f, 0.24f };
+    constexpr Marionette::Color k_fieldTargetColor{ 0.35f, 1.0f, 0.45f, 1.0f };
+    constexpr Marionette::Color k_salvageColor{ 0.15f, 0.95f, 0.28f, 1.0f };
+    constexpr Marionette::Color k_playerMissileColor{ 0.78f, 0.92f, 1.0f,
+                                                      1.0f };
+    constexpr Marionette::Color k_machineGunColor{ 1.0f, 0.94f, 0.45f, 1.0f };
+    constexpr Marionette::Color k_reverseMissileColor{ 0.15f, 1.0f, 0.72f,
+                                                       1.0f };
+    constexpr Marionette::Color k_enemyMissileColor{ 1.0f, 0.22f, 0.12f, 1.0f };
+    constexpr Marionette::Color k_enemyBulletColor{ 1.0f, 0.05f, 0.08f, 1.0f };
+    constexpr Marionette::Color k_largeMissileColor{ 0.78f, 0.18f, 1.0f, 1.0f };
+    constexpr Marionette::Color k_bossColor{ 0.95f, 0.1f, 0.22f, 1.0f };
+    constexpr Marionette::Color k_bossPartColor{ 0.95f, 0.42f, 0.16f, 1.0f };
+    constexpr Marionette::Color k_bossCoreLockedColor{ 0.24f, 0.24f, 0.28f,
+                                                       1.0f };
+    constexpr Marionette::Color k_bossBeamColor{ 0.18f, 0.78f, 1.0f, 1.0f };
+    constexpr Marionette::Color k_bossMuzzleColor{ 1.0f, 0.52f, 0.18f, 1.0f };
+    constexpr Marionette::Color k_explosionColor{ 1.0f, 0.62f, 0.12f, 1.0f };
+    constexpr Marionette::Color k_missileCarrierColor{ 0.22f, 0.75f, 1.0f,
+                                                       1.0f };
+    constexpr Marionette::Color k_heavyCarrierColor{ 0.86f, 0.22f, 1.0f, 1.0f };
+    constexpr Marionette::Color k_sonicStreamColor{ 0.12f, 0.55f, 1.0f, 1.0f };
+    constexpr Marionette::Color k_armorColor{ 1.0f, 0.78f, 0.18f, 1.0f };
+    constexpr Marionette::Color k_infiniteMissileColor{ 1.0f, 0.25f, 0.9f,
+                                                        1.0f };
+    constexpr Marionette::Color k_uiTitleColor{ 0.82f, 0.95f, 1.0f, 1.0f };
+    constexpr Marionette::Color k_uiBodyColor{ 0.94f, 0.94f, 0.9f, 1.0f };
+    constexpr Marionette::Color k_uiWarningColor{ 1.0f, 0.32f, 0.22f, 1.0f };
+    constexpr Marionette::Color k_uiResultColor{ 0.35f, 1.0f, 0.68f, 1.0f };
+    constexpr Marionette::Color k_uiHudColor{ 0.84f, 0.92f, 1.0f, 1.0f };
 
     [[nodiscard]] CueStringView make_view(std::string_view a_value) noexcept
     {
-        return CueStringView{
-            a_value.data(),
-            static_cast<uint32_t>(a_value.size())
-        };
+        return CueStringView{ a_value.data(),
+                              static_cast<uint32_t>(a_value.size()) };
     }
 
-    [[nodiscard]] float distance_sq(
-        const CueFloat3& a_left,
-        const CueFloat3& a_right) noexcept
+    [[nodiscard]] float distance_sq(const CueFloat3& a_left,
+                                    const CueFloat3& a_right) noexcept
     {
         const float x = a_left.x - a_right.x;
         const float y = a_left.y - a_right.y;
@@ -103,46 +62,32 @@ namespace
         return x * x + y * y + z * z;
     }
 
-    [[nodiscard]] CueFloat3 subtract(
-        const CueFloat3& a_left,
-        const CueFloat3& a_right) noexcept
+    [[nodiscard]] CueFloat3 subtract(const CueFloat3& a_left,
+                                     const CueFloat3& a_right) noexcept
     {
-        return {
-            a_left.x - a_right.x,
-            a_left.y - a_right.y,
-            a_left.z - a_right.z
-        };
+        return { a_left.x - a_right.x, a_left.y - a_right.y,
+                 a_left.z - a_right.z };
     }
 
-    [[nodiscard]] CueFloat3 scale(
-        const CueFloat3& a_value,
-        float a_scale) noexcept
+    [[nodiscard]] CueFloat3 scale(const CueFloat3& a_value,
+                                  float a_scale) noexcept
     {
-        return {
-            a_value.x * a_scale,
-            a_value.y * a_scale,
-            a_value.z * a_scale
-        };
+        return { a_value.x * a_scale, a_value.y * a_scale,
+                 a_value.z * a_scale };
     }
 
-    [[nodiscard]] CueFloat3 add(
-        const CueFloat3& a_left,
-        const CueFloat3& a_right) noexcept
+    [[nodiscard]] CueFloat3 add(const CueFloat3& a_left,
+                                const CueFloat3& a_right) noexcept
     {
-        return {
-            a_left.x + a_right.x,
-            a_left.y + a_right.y,
-            a_left.z + a_right.z
-        };
+        return { a_left.x + a_right.x, a_left.y + a_right.y,
+                 a_left.z + a_right.z };
     }
 
     [[nodiscard]] CueFloat3 normalize_or_forward(
         const CueFloat3& a_value) noexcept
     {
-        const float lengthSq =
-            a_value.x * a_value.x +
-            a_value.y * a_value.y +
-            a_value.z * a_value.z;
+        const float lengthSq = a_value.x * a_value.x + a_value.y * a_value.y +
+                               a_value.z * a_value.z;
         if (lengthSq <= 0.0001f)
         {
             return { 0.0f, 0.0f, 1.0f };
@@ -152,18 +97,16 @@ namespace
         return scale(a_value, invLength);
     }
 
-    [[nodiscard]] CueFloat3 blend_direction(
-        const CueFloat3& a_current,
-        const CueFloat3& a_target,
-        float a_blend) noexcept
+    [[nodiscard]] CueFloat3 blend_direction(const CueFloat3& a_current,
+                                            const CueFloat3& a_target,
+                                            float a_blend) noexcept
     {
         return normalize_or_forward(
             add(scale(a_current, 1.0f - a_blend), scale(a_target, a_blend)));
     }
 
     [[nodiscard]] Marionette::Transform make_transform(
-        const CueFloat3& a_position,
-        const CueFloat3& a_scale) noexcept
+        const CueFloat3& a_position, const CueFloat3& a_scale) noexcept
     {
         Marionette::Transform transform{};
         transform.position = a_position;
@@ -173,8 +116,7 @@ namespace
     }
 
     [[nodiscard]] Marionette::SpawnObjectDesc make_spawn_desc(
-        std::string_view a_name,
-        std::string_view a_tag,
+        std::string_view a_name, std::string_view a_tag,
         const Marionette::Transform& a_transform) noexcept
     {
         Marionette::SpawnObjectDesc desc{};
@@ -189,8 +131,7 @@ namespace
     }
 
     [[nodiscard]] Marionette::SpawnObjectDesc make_spawn_desc(
-        Marionette::SpawnObjectKind a_kind,
-        std::string_view a_name,
+        Marionette::SpawnObjectKind a_kind, std::string_view a_name,
         std::string_view a_tag,
         const Marionette::Transform& a_transform) noexcept
     {
@@ -200,8 +141,8 @@ namespace
         return desc;
     }
 
-    [[nodiscard]] Marionette::StaticMeshRendererComponentData
-    make_renderer(uint8_t a_castsShadow, uint8_t a_receivesShadow) noexcept
+    [[nodiscard]] Marionette::StaticMeshRendererComponentData make_renderer(
+        uint8_t a_castsShadow, uint8_t a_receivesShadow) noexcept
     {
         Marionette::StaticMeshRendererComponentData renderer{};
         renderer.visible = 1u;
@@ -220,8 +161,7 @@ namespace
     }
 
     [[nodiscard]] Marionette::ColliderComponentData make_box_collider(
-        const CueFloat3& a_halfExtent,
-        bool a_isTrigger) noexcept
+        const CueFloat3& a_halfExtent, bool a_isTrigger) noexcept
     {
         Marionette::ColliderComponentData collider{};
         collider.meshModelName = make_view("");
@@ -255,10 +195,8 @@ namespace
     }
 
     [[nodiscard]] Marionette::UiRectTransformComponentData make_ui_rect(
-        const CueFloat2& a_anchorMin,
-        const CueFloat2& a_anchorMax,
-        const CueFloat2& a_pivot,
-        const CueFloat2& a_anchoredPosition,
+        const CueFloat2& a_anchorMin, const CueFloat2& a_anchorMax,
+        const CueFloat2& a_pivot, const CueFloat2& a_anchoredPosition,
         const CueFloat2& a_sizeDelta) noexcept
     {
         Marionette::UiRectTransformComponentData rect{};
@@ -271,9 +209,7 @@ namespace
     }
 
     [[nodiscard]] Marionette::TextRendererComponentData make_text_renderer(
-        std::string_view a_text,
-        uint32_t a_fontSize,
-        uint32_t a_order,
+        std::string_view a_text, uint32_t a_fontSize, uint32_t a_order,
         const Marionette::Color& a_color) noexcept
     {
         Marionette::TextRendererComponentData text{};
@@ -289,21 +225,19 @@ namespace
         return text;
     }
 
-    [[nodiscard]] bool aabb_overlap(
-        const CueFloat3& a_leftCenter,
-        const CueFloat3& a_leftHalfExtent,
-        const CueFloat3& a_rightCenter,
-        const CueFloat3& a_rightHalfExtent) noexcept
+    [[nodiscard]] bool aabb_overlap(const CueFloat3& a_leftCenter,
+                                    const CueFloat3& a_leftHalfExtent,
+                                    const CueFloat3& a_rightCenter,
+                                    const CueFloat3& a_rightHalfExtent) noexcept
     {
-        return
-            std::abs(a_leftCenter.x - a_rightCenter.x) <=
-                a_leftHalfExtent.x + a_rightHalfExtent.x &&
-            std::abs(a_leftCenter.y - a_rightCenter.y) <=
-                a_leftHalfExtent.y + a_rightHalfExtent.y &&
-            std::abs(a_leftCenter.z - a_rightCenter.z) <=
-                a_leftHalfExtent.z + a_rightHalfExtent.z;
+        return std::abs(a_leftCenter.x - a_rightCenter.x) <=
+                   a_leftHalfExtent.x + a_rightHalfExtent.x &&
+               std::abs(a_leftCenter.y - a_rightCenter.y) <=
+                   a_leftHalfExtent.y + a_rightHalfExtent.y &&
+               std::abs(a_leftCenter.z - a_rightCenter.z) <=
+                   a_leftHalfExtent.z + a_rightHalfExtent.z;
     }
-}
+} // namespace
 
 namespace BorroWing
 {
@@ -336,7 +270,7 @@ namespace BorroWing
     {
         return g_lastRunSummary;
     }
-}
+} // namespace BorroWing
 
 void GameManager::bind_fields(const Marionette::ScriptFieldReader& a_reader)
 {
@@ -346,40 +280,24 @@ void GameManager::bind_fields(const Marionette::ScriptFieldReader& a_reader)
     (void)read_float(a_reader, "machineGunLifeTime", machineGunLifeTime);
     (void)read_float(a_reader, "missileSpeed", missileSpeed);
     (void)read_float(a_reader, "missileLifeTime", missileLifeTime);
-    (void)read_float(
-        a_reader,
-        "reverseMissileStateDuration",
-        reverseMissileStateDuration);
-    (void)read_float(
-        a_reader,
-        "reverseMissileTurnSpeed",
-        reverseMissileTurnSpeed);
+    (void)read_float(a_reader, "reverseMissileStateDuration",
+                     reverseMissileStateDuration);
+    (void)read_float(a_reader, "reverseMissileTurnSpeed",
+                     reverseMissileTurnSpeed);
     (void)read_float(a_reader, "sonicStreamDuration", sonicStreamDuration);
-    (void)read_float(
-        a_reader,
-        "sonicLockAcquireMultiplier",
-        sonicLockAcquireMultiplier);
-    (void)read_float(
-        a_reader,
-        "sonicFireIntervalMultiplier",
-        sonicFireIntervalMultiplier);
-    (void)read_float(
-        a_reader,
-        "sonicMissileTurnMultiplier",
-        sonicMissileTurnMultiplier);
+    (void)read_float(a_reader, "sonicLockAcquireMultiplier",
+                     sonicLockAcquireMultiplier);
+    (void)read_float(a_reader, "sonicFireIntervalMultiplier",
+                     sonicFireIntervalMultiplier);
+    (void)read_float(a_reader, "sonicMissileTurnMultiplier",
+                     sonicMissileTurnMultiplier);
     (void)read_float(a_reader, "armorStateDuration", armorStateDuration);
-    (void)read_float(
-        a_reader,
-        "infiniteMissileDuration",
-        infiniteMissileDuration);
-    (void)read_float(
-        a_reader,
-        "infiniteFireIntervalMultiplier",
-        infiniteFireIntervalMultiplier);
-    (void)read_float(
-        a_reader,
-        "infiniteLockRangeMultiplier",
-        infiniteLockRangeMultiplier);
+    (void)read_float(a_reader, "infiniteMissileDuration",
+                     infiniteMissileDuration);
+    (void)read_float(a_reader, "infiniteFireIntervalMultiplier",
+                     infiniteFireIntervalMultiplier);
+    (void)read_float(a_reader, "infiniteLockRangeMultiplier",
+                     infiniteLockRangeMultiplier);
     (void)read_float(a_reader, "lockRange", lockRange);
     (void)read_float(a_reader, "lockWidth", lockWidth);
     (void)read_float(a_reader, "lockHeight", lockHeight);
@@ -387,29 +305,21 @@ void GameManager::bind_fields(const Marionette::ScriptFieldReader& a_reader)
     (void)read_float(a_reader, "missileTurnSpeed", missileTurnSpeed);
     (void)read_float(a_reader, "fieldMaxGauge", fieldMaxGauge);
     (void)read_float(a_reader, "fieldDrainPerSecond", fieldDrainPerSecond);
-    (void)read_float(
-        a_reader,
-        "fieldRechargePerSecond",
-        fieldRechargePerSecond);
+    (void)read_float(a_reader, "fieldRechargePerSecond",
+                     fieldRechargePerSecond);
     (void)read_float(a_reader, "fieldHalfExtentX", fieldHalfExtentX);
     (void)read_float(a_reader, "fieldHalfExtentY", fieldHalfExtentY);
     (void)read_float(a_reader, "fieldHalfExtentZ", fieldHalfExtentZ);
     (void)read_float(a_reader, "enemySpawnInterval", enemySpawnInterval);
     (void)read_float(a_reader, "salvageSpawnInterval", salvageSpawnInterval);
-    (void)read_float(
-        a_reader,
-        "enemyMissileSpawnInterval",
-        enemyMissileSpawnInterval);
+    (void)read_float(a_reader, "enemyMissileSpawnInterval",
+                     enemyMissileSpawnInterval);
     (void)read_float(a_reader, "enemyMissileSpeed", enemyMissileSpeed);
-    (void)read_float(
-        a_reader,
-        "largeMissileSpawnInterval",
-        largeMissileSpawnInterval);
+    (void)read_float(a_reader, "largeMissileSpawnInterval",
+                     largeMissileSpawnInterval);
     (void)read_float(a_reader, "largeMissileSpeed", largeMissileSpeed);
-    (void)read_float(
-        a_reader,
-        "normalBulletSpawnInterval",
-        normalBulletSpawnInterval);
+    (void)read_float(a_reader, "normalBulletSpawnInterval",
+                     normalBulletSpawnInterval);
     (void)read_float(a_reader, "normalBulletSpeed", normalBulletSpeed);
     (void)read_float(a_reader, "spawnLeadDistance", spawnLeadDistance);
     (void)read_float(a_reader, "worldScrollSpeed", worldScrollSpeed);
@@ -482,9 +392,8 @@ void GameManager::enter_result_scene()
     request_scene_transition("Result", true);
 }
 
-void GameManager::request_scene_transition(
-    const char* a_sceneName,
-    bool a_cleared)
+void GameManager::request_scene_transition(const char* a_sceneName,
+                                           bool a_cleared)
 {
     if (hasRequestedSceneTransition)
     {
@@ -494,11 +403,7 @@ void GameManager::request_scene_transition(
     hasRequestedSceneTransition = true;
     BorroWing::set_gameplay_active(false);
     BorroWing::set_last_run_summary(BorroWing::RunSummary{
-        score,
-        salvageCount,
-        armorCount,
-        elapsedTime,
-        a_cleared });
+        score, salvageCount, armorCount, elapsedTime, a_cleared });
 
     const Marionette::SceneId loadedScene =
         Marionette::SceneManager.load_scene(a_sceneName);
@@ -511,7 +416,8 @@ void GameManager::request_scene_transition(
     }
 
     destroy_play_scene_objects();
-    log_info(a_cleared ? "Result scene requested." : "Game over scene requested.");
+    log_info(a_cleared ? "Result scene requested."
+                       : "Game over scene requested.");
 }
 
 void GameManager::destroy_play_scene_objects()
@@ -584,8 +490,7 @@ void GameManager::update_gameplay(float a_deltaTime)
         std::max(0.0f, reverseMissileStateTimer - a_deltaTime);
     sonicStreamTimer = std::max(0.0f, sonicStreamTimer - a_deltaTime);
     armorStateTimer = std::max(0.0f, armorStateTimer - a_deltaTime);
-    infiniteMissileTimer =
-        std::max(0.0f, infiniteMissileTimer - a_deltaTime);
+    infiniteMissileTimer = std::max(0.0f, infiniteMissileTimer - a_deltaTime);
     terrainHitCooldown = std::max(0.0f, terrainHitCooldown - a_deltaTime);
     progressLogTimer = std::max(0.0f, progressLogTimer - a_deltaTime);
 
@@ -606,6 +511,7 @@ void GameManager::update_gameplay(float a_deltaTime)
     update_large_missiles(a_deltaTime);
     update_enemies(a_deltaTime);
     update_salvage();
+    update_visual_effects(a_deltaTime);
     cleanup_behind_player();
     log_progress();
 }
@@ -641,6 +547,7 @@ void GameManager::reset_gameplay_state()
     hasSpawnedBoss = false;
     bossCoreExposed = false;
     bossPartsDestroyed = 0;
+    bossPartTarget = 4;
     bossAttackStep = 0;
     stagePhase = StagePhase::Launch;
     bossAttackTimer = 1.0f;
@@ -778,6 +685,15 @@ void GameManager::clear_dynamic_entities()
     }
     salvages.clear();
 
+    for (const VisualEffect& effect : visualEffects)
+    {
+        destroy_entity_safe(effect.entity);
+    }
+    visualEffects.clear();
+
+    destroy_entity_safe(bossFieldEntity);
+    bossFieldEntity = CueEntityHandle{ k_cueInvalidHandleValue };
+
     for (ActiveTerrainSegment& segment : activeTerrainSegments)
     {
         destroy_terrain_segment(segment);
@@ -802,55 +718,29 @@ void GameManager::ensure_flow_ui()
     destroy_flow_ui();
 
     CueEntityHandle canvas{ k_cueInvalidHandleValue };
-    if (spawn_object(
-            make_spawn_desc(
-                Marionette::SpawnObjectKindEmpty,
-                "FlowCanvas",
-                "FlowUi",
-                make_transform(
-                    { 0.0f, 0.0f, 0.0f },
-                    { 1.0f, 1.0f, 1.0f })),
-            canvas) != CueResult_Ok)
+    if (spawn_object(make_spawn_desc(Marionette::SpawnObjectKindEmpty,
+                                     "FlowCanvas", "FlowUi",
+                                     make_transform({ 0.0f, 0.0f, 0.0f },
+                                                    { 1.0f, 1.0f, 1.0f })),
+                     canvas) != CueResult_Ok)
     {
         return;
     }
 
-    (void)add_or_set_component(
-        canvas,
-        Marionette::ComponentKindCanvas,
-        make_canvas());
-    (void)add_or_set_component(
-        canvas,
-        Marionette::ComponentKindUiRectTransform,
-        make_ui_rect(
-            { 0.0f, 0.0f },
-            { 1.0f, 1.0f },
-            { 0.0f, 0.0f },
-            { 0.0f, 0.0f },
-            { 0.0f, 0.0f }));
+    (void)add_or_set_component(canvas, Marionette::ComponentKindCanvas,
+                               make_canvas());
+    (void)add_or_set_component(canvas, Marionette::ComponentKindUiRectTransform,
+                               make_ui_rect({ 0.0f, 0.0f }, { 1.0f, 1.0f },
+                                            { 0.0f, 0.0f }, { 0.0f, 0.0f },
+                                            { 0.0f, 0.0f }));
     uiCanvasEntity = canvas;
 
-    uiTitleEntity = spawn_ui_text(
-        "FlowTitle",
-        -220.0f,
-        150.0f,
-        82u,
-        20u,
-        k_uiTitleColor);
-    uiBodyEntity = spawn_ui_text(
-        "FlowBody",
-        -40.0f,
-        280.0f,
-        34u,
-        21u,
-        k_uiBodyColor);
-    uiHudEntity = spawn_ui_text(
-        "FlowHud",
-        34.0f,
-        84.0f,
-        28u,
-        22u,
-        k_uiHudColor);
+    uiTitleEntity =
+        spawn_ui_text("FlowTitle", -220.0f, 150.0f, 82u, 20u, k_uiTitleColor);
+    uiBodyEntity =
+        spawn_ui_text("FlowBody", -40.0f, 280.0f, 34u, 21u, k_uiBodyColor);
+    uiHudEntity =
+        spawn_ui_text("FlowHud", 34.0f, 84.0f, 28u, 22u, k_uiHudColor);
 }
 
 void GameManager::update_flow_ui()
@@ -862,60 +752,43 @@ void GameManager::update_flow_ui()
     switch (flowState)
     {
     case FlowState::Title:
-        set_ui_text(
-            uiTitleEntity,
-            "BorroWing",
-            82u,
-            20u,
-            k_uiTitleColor);
+        set_ui_text(uiTitleEntity, "BorroWing", 82u, 20u, k_uiTitleColor);
         set_ui_text(
             uiBodyEntity,
-            "Press ENTER or SPACE to start\nWASD / Arrow: Move  Space: Gun  Right Mouse: Missile\nE: Convert Field  R: Infinite Missile",
-            30u,
-            21u,
-            k_uiBodyColor);
+            "Press ENTER or SPACE to start\nWASD / Arrow: Move  Space: Gun "
+            " Right Mouse: Missile\nE: Convert Field  R: Infinite Missile",
+            30u, 21u, k_uiBodyColor);
         set_ui_text(uiHudEntity, "", 24u, 22u, k_uiHudColor);
         return;
     case FlowState::Playing:
-        (void)std::snprintf(
-            hud,
-            sizeof(hud),
-            "Score %d   Hull %d/%d   Armor %d   Salvage %d   Time %.0f/%.0f",
-            score,
-            playerHull,
-            std::max(1, playerHullMax),
-            armorCount,
-            salvageCount,
-            elapsedTime,
-            std::max(1.0f, stageDuration));
+        (void)std::snprintf(hud, sizeof(hud),
+                            "Score %d   Hull %d/%d   Armor %d   Salvage %d   "
+                            "Time %.0f/%.0f   Boss "
+                            "%d/%d%s",
+                            score, playerHull, std::max(1, playerHullMax),
+                            armorCount, salvageCount, elapsedTime,
+                            std::max(1.0f, stageDuration), bossPartsDestroyed,
+                            std::max(1, bossPartTarget),
+                            bossCoreExposed ? " CORE EXPOSED" : "");
         set_ui_text(uiTitleEntity, "", 24u, 20u, k_uiTitleColor);
         set_ui_text(uiBodyEntity, "", 24u, 21u, k_uiBodyColor);
         set_ui_text(uiHudEntity, hud, 26u, 22u, k_uiHudColor);
         return;
     case FlowState::GameOver:
-        (void)std::snprintf(
-            body,
-            sizeof(body),
-            "Score %d\nSurvival Time %.1f sec\nPress ENTER or SPACE to retry\nPress ESC for title",
-            score,
-            elapsedTime);
-        set_ui_text(
-            uiTitleEntity,
-            "GAME OVER",
-            76u,
-            20u,
-            k_uiWarningColor);
+        (void)std::snprintf(body, sizeof(body),
+                            "Score %d\nSurvival Time %.1f sec\nPress ENTER or "
+                            "SPACE to retry\nPress ESC for title",
+                            score, elapsedTime);
+        set_ui_text(uiTitleEntity, "GAME OVER", 76u, 20u, k_uiWarningColor);
         set_ui_text(uiBodyEntity, body, 34u, 21u, k_uiBodyColor);
         set_ui_text(uiHudEntity, "", 24u, 22u, k_uiHudColor);
         return;
     case FlowState::Result:
         (void)std::snprintf(
-            body,
-            sizeof(body),
-            "Score %d\nSalvage %d   Armor %d\nPress ENTER or SPACE to play again\nPress ESC for title",
-            score,
-            salvageCount,
-            armorCount);
+            body, sizeof(body),
+            "Score %d\nSalvage %d   Armor %d\nPress ENTER or SPACE "
+            "to play again\nPress ESC for title",
+            score, salvageCount, armorCount);
         set_ui_text(uiTitleEntity, "RESULT", 76u, 20u, k_uiResultColor);
         set_ui_text(uiBodyEntity, body, 34u, 21u, k_uiBodyColor);
         set_ui_text(uiHudEntity, "", 24u, 22u, k_uiHudColor);
@@ -935,13 +808,10 @@ void GameManager::destroy_flow_ui()
     uiCanvasEntity = CueEntityHandle{ k_cueInvalidHandleValue };
 }
 
-CueEntityHandle GameManager::spawn_ui_text(
-    const char* a_name,
-    float a_y,
-    float a_height,
-    uint32_t a_fontSize,
-    uint32_t a_order,
-    const Marionette::Color& a_color)
+CueEntityHandle GameManager::spawn_ui_text(const char* a_name, float a_y,
+                                           float a_height, uint32_t a_fontSize,
+                                           uint32_t a_order,
+                                           const Marionette::Color& a_color)
 {
     CueEntityHandle entity{ k_cueInvalidHandleValue };
     if (uiCanvasEntity.value == k_cueInvalidHandleValue)
@@ -949,39 +819,27 @@ CueEntityHandle GameManager::spawn_ui_text(
         return entity;
     }
 
-    if (spawn_object(
-            make_spawn_desc(
-                Marionette::SpawnObjectKindEmpty,
-                a_name,
-                "FlowUi",
-                make_transform(
-                    { 0.0f, 0.0f, 0.0f },
-                    { 1.0f, 1.0f, 1.0f })),
-            entity) != CueResult_Ok)
+    if (spawn_object(make_spawn_desc(Marionette::SpawnObjectKindEmpty, a_name,
+                                     "FlowUi",
+                                     make_transform({ 0.0f, 0.0f, 0.0f },
+                                                    { 1.0f, 1.0f, 1.0f })),
+                     entity) != CueResult_Ok)
     {
         return CueEntityHandle{ k_cueInvalidHandleValue };
     }
 
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindUiRectTransform,
-        make_ui_rect(
-            { 0.5f, 0.5f },
-            { 0.5f, 0.5f },
-            { 0.5f, 0.5f },
-            { 0.0f, a_y },
-            { 1500.0f, a_height }));
+    (void)add_or_set_component(entity, Marionette::ComponentKindUiRectTransform,
+                               make_ui_rect({ 0.5f, 0.5f }, { 0.5f, 0.5f },
+                                            { 0.5f, 0.5f }, { 0.0f, a_y },
+                                            { 1500.0f, a_height }));
     set_ui_text(entity, "", a_fontSize, a_order, a_color);
     (void)set_parent(entity, uiCanvasEntity, false);
     return entity;
 }
 
-void GameManager::set_ui_text(
-    CueEntityHandle a_entity,
-    std::string_view a_text,
-    uint32_t a_fontSize,
-    uint32_t a_order,
-    const Marionette::Color& a_color) const
+void GameManager::set_ui_text(CueEntityHandle a_entity, std::string_view a_text,
+                              uint32_t a_fontSize, uint32_t a_order,
+                              const Marionette::Color& a_color) const
 {
     if (a_entity.value == k_cueInvalidHandleValue)
     {
@@ -989,8 +847,7 @@ void GameManager::set_ui_text(
     }
 
     (void)add_or_set_component(
-        a_entity,
-        Marionette::ComponentKindTextRenderer,
+        a_entity, Marionette::ComponentKindTextRenderer,
         make_text_renderer(a_text, a_fontSize, a_order, a_color));
 }
 
@@ -1021,9 +878,8 @@ void GameManager::resolve_player()
     }
 
     const std::vector<CueEntityHandle> players = find_entities_by_tag("Player");
-    playerEntity = players.empty()
-        ? CueEntityHandle{ k_cueInvalidHandleValue }
-        : players.front();
+    playerEntity = players.empty() ? CueEntityHandle{ k_cueInvalidHandleValue }
+                                   : players.front();
 }
 
 void GameManager::configure_player_collider() const
@@ -1033,10 +889,8 @@ void GameManager::configure_player_collider() const
         return;
     }
 
-    (void)add_or_set_component(
-        playerEntity,
-        Marionette::ComponentKindCollider,
-        make_box_trigger({ 0.65f, 0.3f, 1.25f }));
+    (void)add_or_set_component(playerEntity, Marionette::ComponentKindCollider,
+                               make_box_trigger({ 0.65f, 0.3f, 1.25f }));
 }
 
 void GameManager::update_convert_field(float a_deltaTime)
@@ -1069,8 +923,7 @@ void GameManager::update_convert_field(float a_deltaTime)
     update_convert_field_targets(playerTransform);
 
     fieldGauge = std::max(
-        0.0f,
-        fieldGauge - std::max(0.0f, fieldDrainPerSecond) * a_deltaTime);
+        0.0f, fieldGauge - std::max(0.0f, fieldDrainPerSecond) * a_deltaTime);
     if (fieldGauge <= 0.0f)
     {
         deactivate_convert_field();
@@ -1086,30 +939,27 @@ void GameManager::activate_convert_field(
         return;
     }
 
-    Marionette::Transform transform = make_transform(
-        a_playerTransform.position,
-        {
-            fieldHalfExtentX * 2.0f,
-            fieldHalfExtentY * 2.0f,
-            fieldHalfExtentZ * 2.0f,
-        });
+    Marionette::Transform transform =
+        make_transform(a_playerTransform.position, {
+                                                       fieldHalfExtentX * 2.0f,
+                                                       fieldHalfExtentY * 2.0f,
+                                                       fieldHalfExtentZ * 2.0f,
+                                                   });
 
     CueEntityHandle entity{ k_cueInvalidHandleValue };
-    if (spawn_object(
-            make_spawn_desc("ConvertField", "ConvertField", transform),
-            entity) != CueResult_Ok)
+    if (spawn_object(make_spawn_desc("ConvertField", "ConvertField", transform),
+                     entity) != CueResult_Ok)
     {
         return;
     }
 
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(0u, 0u));
     (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindStaticMeshRenderer,
-        make_renderer(0u, 0u));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindCollider,
-        make_box_trigger({ fieldHalfExtentX, fieldHalfExtentY, fieldHalfExtentZ }));
+        entity, Marionette::ComponentKindCollider,
+        make_box_trigger(
+            { fieldHalfExtentX, fieldHalfExtentY, fieldHalfExtentZ }));
     (void)set_material_color(entity, k_convertFieldColor);
 
     convertFieldEntity = entity;
@@ -1153,13 +1003,12 @@ void GameManager::update_convert_field_transform(
         return;
     }
 
-    Marionette::Transform transform = make_transform(
-        a_playerTransform.position,
-        {
-            fieldHalfExtentX * 2.0f,
-            fieldHalfExtentY * 2.0f,
-            fieldHalfExtentZ * 2.0f,
-        });
+    Marionette::Transform transform =
+        make_transform(a_playerTransform.position, {
+                                                       fieldHalfExtentX * 2.0f,
+                                                       fieldHalfExtentY * 2.0f,
+                                                       fieldHalfExtentZ * 2.0f,
+                                                   });
     (void)set_transform(convertFieldEntity, transform);
 }
 
@@ -1180,10 +1029,8 @@ void GameManager::update_convert_field_targets(
             continue;
         }
 
-        if (is_inside_convert_field(
-                a_playerTransform.position,
-                transform.position,
-                missile.radius))
+        if (is_inside_convert_field(a_playerTransform.position,
+                                    transform.position, missile.radius))
         {
             absorb_enemy_missile(missile);
         }
@@ -1207,10 +1054,8 @@ void GameManager::update_convert_field_targets(
             continue;
         }
 
-        if (is_inside_convert_field(
-                a_playerTransform.position,
-                transform.position,
-                missile.radius))
+        if (is_inside_convert_field(a_playerTransform.position,
+                                    transform.position, missile.radius))
         {
             absorb_large_missile(missile);
         }
@@ -1227,10 +1072,8 @@ void GameManager::update_convert_field_targets(
             get_transform(salvage.entity, transform) == CueResult_Ok;
         const bool isInside =
             isValid &&
-            is_inside_convert_field(
-                a_playerTransform.position,
-                transform.position,
-                salvage.radius);
+            is_inside_convert_field(a_playerTransform.position,
+                                    transform.position, salvage.radius);
 
         if (isInside)
         {
@@ -1255,8 +1098,7 @@ void GameManager::absorb_enemy_missile(EnemyMissile& a_missile)
     a_missile.entity = CueEntityHandle{ k_cueInvalidHandleValue };
     ++reverseMissileAmmo;
     reverseMissileStateTimer = std::max(
-        reverseMissileStateTimer,
-        std::max(0.0f, reverseMissileStateDuration));
+        reverseMissileStateTimer, std::max(0.0f, reverseMissileStateDuration));
     score += 10;
 }
 
@@ -1269,9 +1111,8 @@ void GameManager::absorb_large_missile(LargeMissile& a_missile)
 
     destroy_entity_safe(a_missile.entity);
     a_missile.entity = CueEntityHandle{ k_cueInvalidHandleValue };
-    sonicStreamTimer = std::max(
-        sonicStreamTimer,
-        std::max(0.0f, sonicStreamDuration));
+    sonicStreamTimer =
+        std::max(sonicStreamTimer, std::max(0.0f, sonicStreamDuration));
     score += 50;
 }
 
@@ -1287,21 +1128,18 @@ void GameManager::absorb_salvage(Salvage& a_salvage)
     a_salvage.inConvertField = false;
     ++armorCount;
     ++salvageCount;
-    armorStateTimer = std::max(
-        armorStateTimer,
-        std::max(0.0f, armorStateDuration));
+    armorStateTimer =
+        std::max(armorStateTimer, std::max(0.0f, armorStateDuration));
     score += 25;
 }
 
-bool GameManager::is_inside_convert_field(
-    const CueFloat3& a_center,
-    const CueFloat3& a_position,
-    float a_radius) const
+bool GameManager::is_inside_convert_field(const CueFloat3& a_center,
+                                          const CueFloat3& a_position,
+                                          float a_radius) const
 {
-    return
-        std::abs(a_position.x - a_center.x) <= fieldHalfExtentX + a_radius &&
-        std::abs(a_position.y - a_center.y) <= fieldHalfExtentY + a_radius &&
-        std::abs(a_position.z - a_center.z) <= fieldHalfExtentZ + a_radius;
+    return std::abs(a_position.x - a_center.x) <= fieldHalfExtentX + a_radius &&
+           std::abs(a_position.y - a_center.y) <= fieldHalfExtentY + a_radius &&
+           std::abs(a_position.z - a_center.z) <= fieldHalfExtentZ + a_radius;
 }
 
 bool GameManager::is_sonic_stream_active() const noexcept
@@ -1316,10 +1154,8 @@ bool GameManager::is_armor_active() const noexcept
 
 bool GameManager::is_infinite_missile_ready() const noexcept
 {
-    return
-        reverseMissileStateTimer > 0.0f &&
-        sonicStreamTimer > 0.0f &&
-        armorCount > 0;
+    return reverseMissileStateTimer > 0.0f && sonicStreamTimer > 0.0f &&
+           armorCount > 0;
 }
 
 bool GameManager::is_infinite_missile_active() const noexcept
@@ -1409,9 +1245,8 @@ bool GameManager::consume_armor()
     }
     else
     {
-        armorStateTimer = std::max(
-            armorStateTimer,
-            std::max(0.0f, armorStateDuration));
+        armorStateTimer =
+            std::max(armorStateTimer, std::max(0.0f, armorStateDuration));
     }
     return true;
 }
@@ -1432,16 +1267,14 @@ void GameManager::update_lock_on(float)
     }
 
     lockedEnemies.erase(
-        std::remove_if(
-            lockedEnemies.begin(),
-            lockedEnemies.end(),
-            [this](CueEntityHandle a_entity)
-            {
-                Marionette::Transform transform{};
-                return
-                    a_entity.value == k_cueInvalidHandleValue ||
-                    get_transform(a_entity, transform) != CueResult_Ok;
-            }),
+        std::remove_if(lockedEnemies.begin(), lockedEnemies.end(),
+                       [this](CueEntityHandle a_entity)
+                       {
+                           Marionette::Transform transform{};
+                           return a_entity.value == k_cueInvalidHandleValue ||
+                                  get_transform(a_entity, transform) !=
+                                      CueResult_Ok;
+                       }),
         lockedEnemies.end());
 
     for (const Enemy& enemy : enemies)
@@ -1470,34 +1303,27 @@ bool GameManager::is_enemy_in_lock_range(
     const Marionette::Transform& a_playerTransform,
     const Marionette::Transform& a_enemyTransform) const
 {
-    const float rangeMultiplier = is_infinite_missile_active()
-        ? std::max(1.0f, infiniteLockRangeMultiplier)
-        : 1.0f;
-    const float dz =
-        a_enemyTransform.position.z - a_playerTransform.position.z;
+    const float rangeMultiplier =
+        is_infinite_missile_active()
+            ? std::max(1.0f, infiniteLockRangeMultiplier)
+            : 1.0f;
+    const float dz = a_enemyTransform.position.z - a_playerTransform.position.z;
     if (dz <= 0.0f || dz > lockRange * rangeMultiplier)
     {
         return false;
     }
 
-    const float dx =
-        a_enemyTransform.position.x - a_playerTransform.position.x;
-    const float dy =
-        a_enemyTransform.position.y - a_playerTransform.position.y;
-    return
-        std::abs(dx) <= lockWidth * rangeMultiplier &&
-        std::abs(dy) <= lockHeight * rangeMultiplier;
+    const float dx = a_enemyTransform.position.x - a_playerTransform.position.x;
+    const float dy = a_enemyTransform.position.y - a_playerTransform.position.y;
+    return std::abs(dx) <= lockWidth * rangeMultiplier &&
+           std::abs(dy) <= lockHeight * rangeMultiplier;
 }
 
 bool GameManager::is_locked(CueEntityHandle a_entity) const
 {
-    return std::any_of(
-        lockedEnemies.begin(),
-        lockedEnemies.end(),
-        [a_entity](CueEntityHandle a_locked)
-        {
-            return a_locked.value == a_entity.value;
-        });
+    return std::any_of(lockedEnemies.begin(), lockedEnemies.end(),
+                       [a_entity](CueEntityHandle a_locked)
+                       { return a_locked.value == a_entity.value; });
 }
 
 void GameManager::update_lock_visuals()
@@ -1528,9 +1354,8 @@ void GameManager::clear_lock_visual(CueEntityHandle a_entity) const
     (void)clear_material_property_block(a_entity);
 }
 
-void GameManager::set_lock_visual(
-    CueEntityHandle a_entity,
-    const Marionette::Color& a_color) const
+void GameManager::set_lock_visual(CueEntityHandle a_entity,
+                                  const Marionette::Color& a_color) const
 {
     if (a_entity.value == k_cueInvalidHandleValue)
     {
@@ -1562,8 +1387,7 @@ void GameManager::update_combat(float)
         machineGunTimer = std::max(0.01f, machineGunInterval);
     }
 
-    const bool wantsMissile =
-        push_mouse_button(Marionette::MouseButton::Right);
+    const bool wantsMissile = push_mouse_button(Marionette::MouseButton::Right);
     if (!wantsMissile || missileFireTimer > 0.0f || lockedEnemies.empty())
     {
         return;
@@ -1589,14 +1413,15 @@ void GameManager::update_combat(float)
         spawn_missile(playerTransform, lockedEnemy, fireReverseMissile);
     }
 
-    float fireIntervalMultiplier = is_sonic_stream_active()
-        ? std::clamp(sonicFireIntervalMultiplier, 0.1f, 1.0f)
-        : 1.0f;
+    float fireIntervalMultiplier =
+        is_sonic_stream_active()
+            ? std::clamp(sonicFireIntervalMultiplier, 0.1f, 1.0f)
+            : 1.0f;
     if (fireInfiniteMissile)
     {
-        fireIntervalMultiplier = std::min(
-            fireIntervalMultiplier,
-            std::clamp(infiniteFireIntervalMultiplier, 0.05f, 1.0f));
+        fireIntervalMultiplier =
+            std::min(fireIntervalMultiplier,
+                     std::clamp(infiniteFireIntervalMultiplier, 0.05f, 1.0f));
     }
     missileFireTimer = std::max(0.03f, fireInterval * fireIntervalMultiplier);
 }
@@ -1635,9 +1460,7 @@ void GameManager::load_terrain_config()
     {
         TerrainSegmentDef definition{};
         if (read_terrain_segment_definition(
-                indexConfig,
-                static_cast<uint32_t>(index),
-                definition))
+                indexConfig, static_cast<uint32_t>(index), definition))
         {
             terrainDefinitions.push_back(std::move(definition));
         }
@@ -1647,11 +1470,9 @@ void GameManager::load_terrain_config()
     hasLoadedTerrainConfig = true;
 
     char message[160]{};
-    (void)std::snprintf(
-        message,
-        sizeof(message),
-        "Grand canyon terrain definitions loaded: %d",
-        static_cast<int>(terrainDefinitions.size()));
+    (void)std::snprintf(message, sizeof(message),
+                        "Grand canyon terrain definitions loaded: %d",
+                        static_cast<int>(terrainDefinitions.size()));
     log_info(message);
 }
 
@@ -1667,46 +1488,35 @@ void GameManager::unload_terrain_config()
 }
 
 bool GameManager::read_terrain_segment_definition(
-    Marionette::JsonConfigHandle a_indexConfig,
-    uint32_t a_index,
+    Marionette::JsonConfigHandle a_indexConfig, uint32_t a_index,
     TerrainSegmentDef& a_outDefinition)
 {
-    const std::string basePath =
-        "segments[" + std::to_string(a_index) + "]";
+    const std::string basePath = "segments[" + std::to_string(a_index) + "]";
     std::string metadataPath{};
-    if (get_json_config_string(
-            a_indexConfig,
-            basePath + ".metadata",
-            metadataPath) != CueResult_Ok)
+    if (get_json_config_string(a_indexConfig, basePath + ".metadata",
+                               metadataPath) != CueResult_Ok)
     {
         return false;
     }
 
     Marionette::JsonConfigHandle segmentConfig{};
-    if (load_json_config(
-            "Terrain/GrandCanyonSegments/" + metadataPath,
-            segmentConfig) != CueResult_Ok)
+    if (load_json_config("Terrain/GrandCanyonSegments/" + metadataPath,
+                         segmentConfig) != CueResult_Ok)
     {
         return false;
     }
 
     TerrainSegmentDef definition{};
     (void)get_json_config_string(segmentConfig, "id", definition.id);
-    (void)get_json_config_string(
-        segmentConfig,
-        "visualModelName",
-        definition.modelName);
+    (void)get_json_config_string(segmentConfig, "visualModelName",
+                                 definition.modelName);
     (void)get_json_config_float(segmentConfig, "length", definition.length);
-    (void)get_json_config_bool(
-        segmentConfig,
-        "hasObstacles",
-        definition.hasObstacles);
+    (void)get_json_config_bool(segmentConfig, "hasObstacles",
+                               definition.hasObstacles);
 
     int32_t proxyCount = 0;
-    (void)get_json_config_int(
-        segmentConfig,
-        "collision.proxyCount",
-        proxyCount);
+    (void)get_json_config_int(segmentConfig, "collision.proxyCount",
+                              proxyCount);
     proxyCount = std::max(0, proxyCount);
     definition.proxies.reserve(static_cast<size_t>(proxyCount));
     for (int32_t proxyIndex = 0; proxyIndex < proxyCount; ++proxyIndex)
@@ -1714,36 +1524,22 @@ bool GameManager::read_terrain_segment_definition(
         const std::string proxyPath =
             "collision.proxies[" + std::to_string(proxyIndex) + "]";
         TerrainProxyDef proxy{};
-        (void)get_json_config_string(
-            segmentConfig,
-            proxyPath + ".name",
-            proxy.name);
-        (void)get_json_config_float(
-            segmentConfig,
-            proxyPath + ".position[0]",
-            proxy.position.x);
-        (void)get_json_config_float(
-            segmentConfig,
-            proxyPath + ".position[1]",
-            proxy.position.y);
-        (void)get_json_config_float(
-            segmentConfig,
-            proxyPath + ".position[2]",
-            proxy.position.z);
+        (void)get_json_config_string(segmentConfig, proxyPath + ".name",
+                                     proxy.name);
+        (void)get_json_config_float(segmentConfig, proxyPath + ".position[0]",
+                                    proxy.position.x);
+        (void)get_json_config_float(segmentConfig, proxyPath + ".position[1]",
+                                    proxy.position.y);
+        (void)get_json_config_float(segmentConfig, proxyPath + ".position[2]",
+                                    proxy.position.z);
 
         CueFloat3 size{ 1.0f, 1.0f, 1.0f };
-        (void)get_json_config_float(
-            segmentConfig,
-            proxyPath + ".size[0]",
-            size.x);
-        (void)get_json_config_float(
-            segmentConfig,
-            proxyPath + ".size[1]",
-            size.y);
-        (void)get_json_config_float(
-            segmentConfig,
-            proxyPath + ".size[2]",
-            size.z);
+        (void)get_json_config_float(segmentConfig, proxyPath + ".size[0]",
+                                    size.x);
+        (void)get_json_config_float(segmentConfig, proxyPath + ".size[1]",
+                                    size.y);
+        (void)get_json_config_float(segmentConfig, proxyPath + ".size[2]",
+                                    size.z);
         proxy.halfExtent = scale(size, 0.5f);
         definition.proxies.push_back(std::move(proxy));
     }
@@ -1774,8 +1570,7 @@ void GameManager::update_terrain_segments(float a_deltaTime)
         return;
     }
 
-    const float scrollDelta =
-        std::max(0.0f, worldScrollSpeed) * a_deltaTime;
+    const float scrollDelta = std::max(0.0f, worldScrollSpeed) * a_deltaTime;
     if (scrollDelta > 0.0f)
     {
         for (ActiveTerrainSegment& segment : activeTerrainSegments)
@@ -1807,8 +1602,7 @@ void GameManager::update_terrain_segments(float a_deltaTime)
     const float cleanupZ = playerTransform.position.z - k_cleanupDistance;
     activeTerrainSegments.erase(
         std::remove_if(
-            activeTerrainSegments.begin(),
-            activeTerrainSegments.end(),
+            activeTerrainSegments.begin(), activeTerrainSegments.end(),
             [this, cleanupZ](ActiveTerrainSegment& a_segment)
             {
                 if (a_segment.centerZ + a_segment.length * 0.5f >= cleanupZ)
@@ -1822,9 +1616,8 @@ void GameManager::update_terrain_segments(float a_deltaTime)
         activeTerrainSegments.end());
 }
 
-void GameManager::translate_entity_z(
-    CueEntityHandle a_entity,
-    float a_deltaZ) const
+void GameManager::translate_entity_z(CueEntityHandle a_entity,
+                                     float a_deltaZ) const
 {
     if (a_entity.value == k_cueInvalidHandleValue)
     {
@@ -1853,35 +1646,27 @@ uint32_t GameManager::choose_terrain_segment_index() const noexcept
     return state % static_cast<uint32_t>(terrainDefinitions.size());
 }
 
-void GameManager::spawn_terrain_segment(
-    const TerrainSegmentDef& a_definition,
-    uint32_t a_definitionIndex,
-    float a_centerZ)
+void GameManager::spawn_terrain_segment(const TerrainSegmentDef& a_definition,
+                                        uint32_t a_definitionIndex,
+                                        float a_centerZ)
 {
-    Marionette::Transform transform = make_transform(
-        { 0.0f, 0.0f, a_centerZ },
-        { 1.0f, 1.0f, 1.0f });
+    Marionette::Transform transform =
+        make_transform({ 0.0f, 0.0f, a_centerZ }, { 1.0f, 1.0f, 1.0f });
 
     CueEntityHandle visualEntity{ k_cueInvalidHandleValue };
-    if (spawn_object(
-            make_spawn_desc(
-                Marionette::SpawnObjectKindStaticMesh,
-                a_definition.id,
-                "Terrain",
-                transform),
-            visualEntity) != CueResult_Ok)
+    if (spawn_object(make_spawn_desc(Marionette::SpawnObjectKindStaticMesh,
+                                     a_definition.id, "Terrain", transform),
+                     visualEntity) != CueResult_Ok)
     {
         return;
     }
 
-    (void)add_or_set_component(
-        visualEntity,
-        Marionette::ComponentKindMeshFilter,
-        make_mesh_filter(a_definition.modelName));
-    (void)add_or_set_component(
-        visualEntity,
-        Marionette::ComponentKindStaticMeshRenderer,
-        make_renderer(1u, 1u));
+    (void)add_or_set_component(visualEntity,
+                               Marionette::ComponentKindMeshFilter,
+                               make_mesh_filter(a_definition.modelName));
+    (void)add_or_set_component(visualEntity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(1u, 1u));
 
     ActiveTerrainSegment segment{};
     segment.visualEntity = visualEntity;
@@ -1903,29 +1688,24 @@ void GameManager::spawn_terrain_segment(
             });
 
         CueEntityHandle proxyEntity{ k_cueInvalidHandleValue };
-        if (spawn_object(
-                make_spawn_desc(
-                    Marionette::SpawnObjectKindEmpty,
-                    proxy.name,
-                    "TerrainCollision",
-                    proxyTransform),
-                proxyEntity) != CueResult_Ok)
+        if (spawn_object(make_spawn_desc(Marionette::SpawnObjectKindEmpty,
+                                         proxy.name, "TerrainCollision",
+                                         proxyTransform),
+                         proxyEntity) != CueResult_Ok)
         {
             continue;
         }
 
-        (void)add_or_set_component(
-            proxyEntity,
-            Marionette::ComponentKindCollider,
-            make_box_collider(proxy.halfExtent, false));
+        (void)add_or_set_component(proxyEntity,
+                                   Marionette::ComponentKindCollider,
+                                   make_box_collider(proxy.halfExtent, false));
         segment.proxyEntities.push_back(proxyEntity);
     }
 
     activeTerrainSegments.push_back(std::move(segment));
 }
 
-void GameManager::destroy_terrain_segment(
-    ActiveTerrainSegment& a_segment) const
+void GameManager::destroy_terrain_segment(ActiveTerrainSegment& a_segment) const
 {
     destroy_entity_safe(a_segment.visualEntity);
     a_segment.visualEntity = CueEntityHandle{ k_cueInvalidHandleValue };
@@ -1962,16 +1742,10 @@ void GameManager::update_terrain_collisions(float)
             terrainDefinitions[segment.definitionIndex];
         for (const TerrainProxyDef& proxy : definition.proxies)
         {
-            const CueFloat3 proxyCenter{
-                proxy.position.x,
-                proxy.position.y,
-                segment.centerZ + proxy.position.z
-            };
-            if (!aabb_overlap(
-                    playerTransform.position,
-                    k_playerHalfExtent,
-                    proxyCenter,
-                    proxy.halfExtent))
+            const CueFloat3 proxyCenter{ proxy.position.x, proxy.position.y,
+                                         segment.centerZ + proxy.position.z };
+            if (!aabb_overlap(playerTransform.position, k_playerHalfExtent,
+                              proxyCenter, proxy.halfExtent))
             {
                 continue;
             }
@@ -2007,8 +1781,20 @@ void GameManager::update_spawning(float a_deltaTime)
     {
         if (!hasSpawnedBoss)
         {
+            spawn_boss_field(playerTransform.position.z);
             spawn_boss(playerTransform.position.z);
             hasSpawnedBoss = true;
+        }
+
+        if (bossFieldEntity.value != k_cueInvalidHandleValue)
+        {
+            Marionette::Transform fieldTransform{};
+            if (get_transform(bossFieldEntity, fieldTransform) == CueResult_Ok)
+            {
+                fieldTransform.position.z =
+                    playerTransform.position.z + spawnLeadDistance * 0.55f;
+                (void)set_transform(bossFieldEntity, fieldTransform);
+            }
         }
 
         bossAttackTimer -= a_deltaTime;
@@ -2036,15 +1822,15 @@ void GameManager::update_spawning(float a_deltaTime)
         if (phaseValue >= static_cast<uint8_t>(StagePhase::LargeMissileIntro) &&
             spawnIndex % 5u == 0u)
         {
-            spawn_enemy_kind(EnemyKind::HeavyCarrier, playerTransform.position.z);
+            spawn_enemy_kind(EnemyKind::HeavyCarrier,
+                             playerTransform.position.z);
         }
-        else if (
-            phaseValue >= static_cast<uint8_t>(StagePhase::SmallMissileIntro) &&
-            spawnIndex % 3u == 0u)
+        else if (phaseValue >=
+                     static_cast<uint8_t>(StagePhase::SmallMissileIntro) &&
+                 spawnIndex % 3u == 0u)
         {
-            spawn_enemy_kind(
-                EnemyKind::MissileCarrier,
-                playerTransform.position.z);
+            spawn_enemy_kind(EnemyKind::MissileCarrier,
+                             playerTransform.position.z);
         }
         else
         {
@@ -2052,22 +1838,19 @@ void GameManager::update_spawning(float a_deltaTime)
         }
         enemySpawnTimer = std::max(0.2f, enemySpawnInterval);
     }
-    if (spawnNormalBullets &&
-        normalBulletSpawnTimer <= 0.0f &&
+    if (spawnNormalBullets && normalBulletSpawnTimer <= 0.0f &&
         enemyBullets.size() < 12u)
     {
         spawn_enemy_bullet(playerTransform);
         normalBulletSpawnTimer = std::max(0.35f, normalBulletSpawnInterval);
     }
-    if (spawnSmallMissiles &&
-        enemyMissileSpawnTimer <= 0.0f &&
+    if (spawnSmallMissiles && enemyMissileSpawnTimer <= 0.0f &&
         enemyMissiles.size() < 14u)
     {
         spawn_enemy_missile(playerTransform);
         enemyMissileSpawnTimer = std::max(0.25f, enemyMissileSpawnInterval);
     }
-    if (spawnLargeMissiles &&
-        largeMissileSpawnTimer <= 0.0f &&
+    if (spawnLargeMissiles && largeMissileSpawnTimer <= 0.0f &&
         largeMissiles.size() < 4u)
     {
         spawn_large_missile(playerTransform);
@@ -2099,18 +1882,15 @@ void GameManager::update_missiles(float a_deltaTime)
             {
                 const CueFloat3 desiredDirection = normalize_or_forward(
                     subtract(targetTransform.position, transform.position));
-                const float sonicTurnMultiplier = is_sonic_stream_active()
-                    ? std::max(1.0f, sonicMissileTurnMultiplier)
-                    : 1.0f;
-                const float turnBlend =
-                    std::clamp(
-                        missile.turnSpeed * sonicTurnMultiplier * a_deltaTime,
-                        0.0f,
-                        1.0f);
+                const float sonicTurnMultiplier =
+                    is_sonic_stream_active()
+                        ? std::max(1.0f, sonicMissileTurnMultiplier)
+                        : 1.0f;
+                const float turnBlend = std::clamp(
+                    missile.turnSpeed * sonicTurnMultiplier * a_deltaTime, 0.0f,
+                    1.0f);
                 missile.direction = blend_direction(
-                    missile.direction,
-                    desiredDirection,
-                    turnBlend);
+                    missile.direction, desiredDirection, turnBlend);
             }
             else
             {
@@ -2118,11 +1898,9 @@ void GameManager::update_missiles(float a_deltaTime)
             }
         }
 
-        transform.position = add(
-            transform.position,
-            scale(
-                normalize_or_forward(missile.direction),
-                missile.speed * a_deltaTime));
+        transform.position = add(transform.position,
+                                 scale(normalize_or_forward(missile.direction),
+                                       missile.speed * a_deltaTime));
         (void)set_transform(missile.entity, transform);
 
         for (Enemy& enemy : enemies)
@@ -2143,6 +1921,12 @@ void GameManager::update_missiles(float a_deltaTime)
             if (distance_sq(transform.position, enemyTransform.position) <=
                 hitRadius * hitRadius)
             {
+                spawn_visual_effect("HitSpark", enemyTransform.position,
+                                    { 0.45f, 0.45f, 0.45f },
+                                    enemy.kind == EnemyKind::BossCore
+                                        ? k_bossBeamColor
+                                        : k_explosionColor,
+                                    0.18f, 2.1f, { 0.0f, 0.0f, -2.0f });
                 destroy_entity_safe(missile.entity);
                 missile.entity = CueEntityHandle{ k_cueInvalidHandleValue };
                 if (enemy.kind == EnemyKind::BossCore && !bossCoreExposed)
@@ -2153,6 +1937,14 @@ void GameManager::update_missiles(float a_deltaTime)
                 enemy.hp -= missile.damage;
                 if (enemy.hp <= 0)
                 {
+                    spawn_visual_effect(
+                        "Explosion", enemyTransform.position,
+                        enemy.kind == EnemyKind::BossCore
+                            ? CueFloat3{ 2.6f, 2.6f, 2.6f }
+                            : CueFloat3{ 1.25f, 1.25f, 1.25f },
+                        k_explosionColor, 0.45f,
+                        enemy.kind == EnemyKind::BossCore ? 5.5f : 3.0f,
+                        { 0.0f, 0.0f, -4.0f });
                     spawn_salvage_at(enemyTransform.position);
                     destroy_entity_safe(enemy.entity);
                     enemy.entity = CueEntityHandle{ k_cueInvalidHandleValue };
@@ -2160,7 +1952,7 @@ void GameManager::update_missiles(float a_deltaTime)
                     {
                         ++bossPartsDestroyed;
                         score += 500;
-                        if (bossPartsDestroyed >= 2)
+                        if (bossPartsDestroyed >= bossPartTarget)
                         {
                             bossCoreExposed = true;
                             for (const Enemy& candidate : enemies)
@@ -2169,9 +1961,8 @@ void GameManager::update_missiles(float a_deltaTime)
                                     candidate.entity.value !=
                                         k_cueInvalidHandleValue)
                                 {
-                                    (void)set_material_color(
-                                        candidate.entity,
-                                        k_bossColor);
+                                    (void)set_material_color(candidate.entity,
+                                                             k_bossColor);
                                 }
                             }
                             log_info("Boss core exposed.");
@@ -2192,24 +1983,22 @@ void GameManager::update_missiles(float a_deltaTime)
         }
     }
 
-    missiles.erase(
-        std::remove_if(
-            missiles.begin(),
-            missiles.end(),
-            [this](const Missile& a_missile)
-            {
-                if (a_missile.entity.value == k_cueInvalidHandleValue)
-                {
-                    return true;
-                }
-                if (a_missile.age > a_missile.lifeTime)
-                {
-                    destroy_entity_safe(a_missile.entity);
-                    return true;
-                }
-                return false;
-            }),
-        missiles.end());
+    missiles.erase(std::remove_if(missiles.begin(), missiles.end(),
+                                  [this](const Missile& a_missile)
+                                  {
+                                      if (a_missile.entity.value ==
+                                          k_cueInvalidHandleValue)
+                                      {
+                                          return true;
+                                      }
+                                      if (a_missile.age > a_missile.lifeTime)
+                                      {
+                                          destroy_entity_safe(a_missile.entity);
+                                          return true;
+                                      }
+                                      return false;
+                                  }),
+                   missiles.end());
 }
 
 void GameManager::update_enemy_bullets(float a_deltaTime)
@@ -2224,13 +2013,10 @@ void GameManager::update_enemy_bullets(float a_deltaTime)
         }
 
         bullet.age += a_deltaTime;
-        transform.position = add(
-            transform.position,
-            scale(
-                normalize_or_forward(bullet.direction),
-                normalBulletSpeed * a_deltaTime));
-        transform.position.z -=
-            std::max(0.0f, worldScrollSpeed) * a_deltaTime;
+        transform.position = add(transform.position,
+                                 scale(normalize_or_forward(bullet.direction),
+                                       normalBulletSpeed * a_deltaTime));
+        transform.position.z -= std::max(0.0f, worldScrollSpeed) * a_deltaTime;
         (void)set_transform(bullet.entity, transform);
 
         if (playerEntity.value == k_cueInvalidHandleValue)
@@ -2256,22 +2042,20 @@ void GameManager::update_enemy_bullets(float a_deltaTime)
     }
 
     enemyBullets.erase(
-        std::remove_if(
-            enemyBullets.begin(),
-            enemyBullets.end(),
-            [this](const EnemyBullet& a_bullet)
-            {
-                if (a_bullet.entity.value == k_cueInvalidHandleValue)
-                {
-                    return true;
-                }
-                if (a_bullet.age > 5.0f)
-                {
-                    destroy_entity_safe(a_bullet.entity);
-                    return true;
-                }
-                return false;
-            }),
+        std::remove_if(enemyBullets.begin(), enemyBullets.end(),
+                       [this](const EnemyBullet& a_bullet)
+                       {
+                           if (a_bullet.entity.value == k_cueInvalidHandleValue)
+                           {
+                               return true;
+                           }
+                           if (a_bullet.age > 5.0f)
+                           {
+                               destroy_entity_safe(a_bullet.entity);
+                               return true;
+                           }
+                           return false;
+                       }),
         enemyBullets.end());
 }
 
@@ -2287,13 +2071,10 @@ void GameManager::update_enemy_missiles(float a_deltaTime)
         }
 
         missile.age += a_deltaTime;
-        transform.position = add(
-            transform.position,
-            scale(
-                normalize_or_forward(missile.direction),
-                enemyMissileSpeed * a_deltaTime));
-        transform.position.z -=
-            std::max(0.0f, worldScrollSpeed) * a_deltaTime;
+        transform.position = add(transform.position,
+                                 scale(normalize_or_forward(missile.direction),
+                                       enemyMissileSpeed * a_deltaTime));
+        transform.position.z -= std::max(0.0f, worldScrollSpeed) * a_deltaTime;
         transform.rotation.z += 2.4f * a_deltaTime;
         (void)set_transform(missile.entity, transform);
 
@@ -2309,33 +2090,30 @@ void GameManager::update_enemy_missiles(float a_deltaTime)
                 {
                     register_player_hit(25);
                     destroy_entity_safe(missile.entity);
-                    missile.entity =
-                        CueEntityHandle{ k_cueInvalidHandleValue };
+                    missile.entity = CueEntityHandle{ k_cueInvalidHandleValue };
                 }
             }
         }
     }
 
     enemyMissiles.erase(
-        std::remove_if(
-            enemyMissiles.begin(),
-            enemyMissiles.end(),
-            [this](const EnemyMissile& a_missile)
-            {
-                if (a_missile.entity.value == k_cueInvalidHandleValue)
-                {
-                    return true;
-                }
+        std::remove_if(enemyMissiles.begin(), enemyMissiles.end(),
+                       [this](const EnemyMissile& a_missile)
+                       {
+                           if (a_missile.entity.value ==
+                               k_cueInvalidHandleValue)
+                           {
+                               return true;
+                           }
 
-                if (a_missile.age > 5.0f)
-                {
-                    destroy_entity_safe(a_missile.entity);
-                    return true;
-                }
-                return false;
-            }),
+                           if (a_missile.age > 5.0f)
+                           {
+                               destroy_entity_safe(a_missile.entity);
+                               return true;
+                           }
+                           return false;
+                       }),
         enemyMissiles.end());
-
 }
 
 void GameManager::update_large_missiles(float a_deltaTime)
@@ -2350,13 +2128,10 @@ void GameManager::update_large_missiles(float a_deltaTime)
         }
 
         missile.age += a_deltaTime;
-        transform.position = add(
-            transform.position,
-            scale(
-                normalize_or_forward(missile.direction),
-                largeMissileSpeed * a_deltaTime));
-        transform.position.z -=
-            std::max(0.0f, worldScrollSpeed) * a_deltaTime;
+        transform.position = add(transform.position,
+                                 scale(normalize_or_forward(missile.direction),
+                                       largeMissileSpeed * a_deltaTime));
+        transform.position.z -= std::max(0.0f, worldScrollSpeed) * a_deltaTime;
         transform.rotation.z += 0.8f * a_deltaTime;
         (void)set_transform(missile.entity, transform);
 
@@ -2372,31 +2147,29 @@ void GameManager::update_large_missiles(float a_deltaTime)
                 {
                     register_player_hit(50);
                     destroy_entity_safe(missile.entity);
-                    missile.entity =
-                        CueEntityHandle{ k_cueInvalidHandleValue };
+                    missile.entity = CueEntityHandle{ k_cueInvalidHandleValue };
                 }
             }
         }
     }
 
     largeMissiles.erase(
-        std::remove_if(
-            largeMissiles.begin(),
-            largeMissiles.end(),
-            [this](const LargeMissile& a_missile)
-            {
-                if (a_missile.entity.value == k_cueInvalidHandleValue)
-                {
-                    return true;
-                }
+        std::remove_if(largeMissiles.begin(), largeMissiles.end(),
+                       [this](const LargeMissile& a_missile)
+                       {
+                           if (a_missile.entity.value ==
+                               k_cueInvalidHandleValue)
+                           {
+                               return true;
+                           }
 
-                if (a_missile.age > 8.0f)
-                {
-                    destroy_entity_safe(a_missile.entity);
-                    return true;
-                }
-                return false;
-            }),
+                           if (a_missile.age > 8.0f)
+                           {
+                               destroy_entity_safe(a_missile.entity);
+                               return true;
+                           }
+                           return false;
+                       }),
         largeMissiles.end());
 }
 
@@ -2415,9 +2188,8 @@ void GameManager::update_enemies(float a_deltaTime)
             enemy.kind == EnemyKind::BossCore)
         {
             transform.position.z = std::max(
-                34.0f,
-                transform.position.z -
-                    std::max(0.0f, worldScrollSpeed) * 0.35f * a_deltaTime);
+                34.0f, transform.position.z - std::max(0.0f, worldScrollSpeed) *
+                                                  0.35f * a_deltaTime);
             transform.rotation.z += 0.25f * a_deltaTime;
         }
         else
@@ -2431,19 +2203,14 @@ void GameManager::update_enemies(float a_deltaTime)
 
     enemies.erase(
         std::remove_if(
-            enemies.begin(),
-            enemies.end(),
-            [](const Enemy& a_enemy)
-            {
-                return a_enemy.entity.value == k_cueInvalidHandleValue;
-            }),
+            enemies.begin(), enemies.end(), [](const Enemy& a_enemy)
+            { return a_enemy.entity.value == k_cueInvalidHandleValue; }),
         enemies.end());
 }
 
 void GameManager::update_salvage()
 {
-    const float scrollDelta =
-        std::max(0.0f, worldScrollSpeed) * delta_time();
+    const float scrollDelta = std::max(0.0f, worldScrollSpeed) * delta_time();
     for (Salvage& salvage : salvages)
     {
         Marionette::Transform transform{};
@@ -2460,13 +2227,46 @@ void GameManager::update_salvage()
 
     salvages.erase(
         std::remove_if(
-            salvages.begin(),
-            salvages.end(),
-            [](const Salvage& a_salvage)
-            {
-                return a_salvage.entity.value == k_cueInvalidHandleValue;
-            }),
+            salvages.begin(), salvages.end(), [](const Salvage& a_salvage)
+            { return a_salvage.entity.value == k_cueInvalidHandleValue; }),
         salvages.end());
+}
+
+void GameManager::update_visual_effects(float a_deltaTime)
+{
+    for (VisualEffect& effect : visualEffects)
+    {
+        Marionette::Transform transform{};
+        if (get_transform(effect.entity, transform) != CueResult_Ok)
+        {
+            effect.entity = CueEntityHandle{ k_cueInvalidHandleValue };
+            continue;
+        }
+
+        effect.age += a_deltaTime;
+        transform.position =
+            add(transform.position, scale(effect.velocity, a_deltaTime));
+        const float growth = std::max(0.0f, effect.scaleGrowth * a_deltaTime);
+        transform.scale = add(transform.scale, { growth, growth, growth });
+        (void)set_transform(effect.entity, transform);
+    }
+
+    visualEffects.erase(
+        std::remove_if(visualEffects.begin(), visualEffects.end(),
+                       [this](const VisualEffect& a_effect)
+                       {
+                           if (a_effect.entity.value == k_cueInvalidHandleValue)
+                           {
+                               return true;
+                           }
+                           if (a_effect.age >= a_effect.lifeTime)
+                           {
+                               destroy_entity_safe(a_effect.entity);
+                               return true;
+                           }
+                           return false;
+                       }),
+        visualEffects.end());
 }
 
 void GameManager::cleanup_behind_player()
@@ -2484,93 +2284,88 @@ void GameManager::cleanup_behind_player()
 
     const float cleanupZ = playerTransform.position.z - 18.0f;
     enemies.erase(
-        std::remove_if(
-            enemies.begin(),
-            enemies.end(),
-            [this, cleanupZ](const Enemy& a_enemy)
-            {
-                if (a_enemy.kind == EnemyKind::BossPart ||
-                    a_enemy.kind == EnemyKind::BossCore)
-                {
-                    return false;
-                }
-                Marionette::Transform transform{};
-                if (get_transform(a_enemy.entity, transform) != CueResult_Ok ||
-                    transform.position.z < cleanupZ)
-                {
-                    destroy_entity_safe(a_enemy.entity);
-                    return true;
-                }
-                return false;
-            }),
+        std::remove_if(enemies.begin(), enemies.end(),
+                       [this, cleanupZ](const Enemy& a_enemy)
+                       {
+                           if (a_enemy.kind == EnemyKind::BossPart ||
+                               a_enemy.kind == EnemyKind::BossCore)
+                           {
+                               return false;
+                           }
+                           Marionette::Transform transform{};
+                           if (get_transform(a_enemy.entity, transform) !=
+                                   CueResult_Ok ||
+                               transform.position.z < cleanupZ)
+                           {
+                               destroy_entity_safe(a_enemy.entity);
+                               return true;
+                           }
+                           return false;
+                       }),
         enemies.end());
 
     enemyBullets.erase(
-        std::remove_if(
-            enemyBullets.begin(),
-            enemyBullets.end(),
-            [this, cleanupZ](const EnemyBullet& a_bullet)
-            {
-                Marionette::Transform transform{};
-                if (get_transform(a_bullet.entity, transform) != CueResult_Ok ||
-                    transform.position.z < cleanupZ)
-                {
-                    destroy_entity_safe(a_bullet.entity);
-                    return true;
-                }
-                return false;
-            }),
+        std::remove_if(enemyBullets.begin(), enemyBullets.end(),
+                       [this, cleanupZ](const EnemyBullet& a_bullet)
+                       {
+                           Marionette::Transform transform{};
+                           if (get_transform(a_bullet.entity, transform) !=
+                                   CueResult_Ok ||
+                               transform.position.z < cleanupZ)
+                           {
+                               destroy_entity_safe(a_bullet.entity);
+                               return true;
+                           }
+                           return false;
+                       }),
         enemyBullets.end());
 
     salvages.erase(
-        std::remove_if(
-            salvages.begin(),
-            salvages.end(),
-            [this, cleanupZ](const Salvage& a_salvage)
-            {
-                Marionette::Transform transform{};
-                if (get_transform(a_salvage.entity, transform) != CueResult_Ok ||
-                    transform.position.z < cleanupZ)
-                {
-                    destroy_entity_safe(a_salvage.entity);
-                    return true;
-                }
-                return false;
-            }),
+        std::remove_if(salvages.begin(), salvages.end(),
+                       [this, cleanupZ](const Salvage& a_salvage)
+                       {
+                           Marionette::Transform transform{};
+                           if (get_transform(a_salvage.entity, transform) !=
+                                   CueResult_Ok ||
+                               transform.position.z < cleanupZ)
+                           {
+                               destroy_entity_safe(a_salvage.entity);
+                               return true;
+                           }
+                           return false;
+                       }),
         salvages.end());
 
     enemyMissiles.erase(
-        std::remove_if(
-            enemyMissiles.begin(),
-            enemyMissiles.end(),
-            [this, cleanupZ](const EnemyMissile& a_missile)
-            {
-                Marionette::Transform transform{};
-                if (get_transform(a_missile.entity, transform) != CueResult_Ok ||
-                    transform.position.z < cleanupZ)
-                {
-                    destroy_entity_safe(a_missile.entity);
-                    return true;
-                }
-                return false;
-            }),
+        std::remove_if(enemyMissiles.begin(), enemyMissiles.end(),
+                       [this, cleanupZ](const EnemyMissile& a_missile)
+                       {
+                           Marionette::Transform transform{};
+                           if (get_transform(a_missile.entity, transform) !=
+                                   CueResult_Ok ||
+                               transform.position.z < cleanupZ)
+                           {
+                               destroy_entity_safe(a_missile.entity);
+                               return true;
+                           }
+                           return false;
+                       }),
         enemyMissiles.end());
 
     largeMissiles.erase(
-        std::remove_if(
-            largeMissiles.begin(),
-            largeMissiles.end(),
-            [this, cleanupZ](const LargeMissile& a_missile)
-            {
-                Marionette::Transform transform{};
-                if (get_transform(a_missile.entity, transform) != CueResult_Ok ||
-                    transform.position.z < cleanupZ)
-                {
-                    destroy_entity_safe(a_missile.entity);
-                    return true;
-                }
-                return false;
-            }),
+        std::remove_if(largeMissiles.begin(), largeMissiles.end(),
+                       [this, cleanupZ](const LargeMissile& a_missile)
+                       {
+                           Marionette::Transform transform{};
+                           if (get_transform(a_missile.entity, transform) !=
+                                   CueResult_Ok ||
+                               transform.position.z < cleanupZ)
+                           {
+                               destroy_entity_safe(a_missile.entity);
+                               return true;
+                           }
+                           return false;
+                       }),
         largeMissiles.end());
 }
 
@@ -2586,39 +2381,32 @@ void GameManager::spawn_machine_gun_bullet(
         { 0.12f, 0.12f, 0.75f });
 
     CueEntityHandle entity{ k_cueInvalidHandleValue };
-    if (spawn_object(
-            make_spawn_desc("MachineGun", "MachineGun", transform),
-            entity) != CueResult_Ok)
+    if (spawn_object(make_spawn_desc("MachineGun", "MachineGun", transform),
+                     entity) != CueResult_Ok)
     {
         return;
     }
 
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindStaticMeshRenderer,
-        make_renderer(0u, 0u));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindCollider,
-        make_box_trigger({ 0.08f, 0.08f, 0.36f }));
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(0u, 0u));
+    (void)add_or_set_component(entity, Marionette::ComponentKindCollider,
+                               make_box_trigger({ 0.08f, 0.08f, 0.36f }));
     (void)set_material_color(entity, k_machineGunColor);
 
-    missiles.push_back(Missile{
-        entity,
-        CueEntityHandle{ k_cueInvalidHandleValue },
-        { 0.0f, 0.0f, 1.0f },
-        0.18f,
-        0.0f,
-        machineGunSpeed,
-        machineGunLifeTime,
-        1,
-        0.0f });
+    missiles.push_back(Missile{ entity,
+                                CueEntityHandle{ k_cueInvalidHandleValue },
+                                { 0.0f, 0.0f, 1.0f },
+                                0.18f,
+                                0.0f,
+                                machineGunSpeed,
+                                machineGunLifeTime,
+                                1,
+                                0.0f });
 }
 
-void GameManager::spawn_missile(
-    const Marionette::Transform& a_playerTransform,
-    CueEntityHandle a_target,
-    bool a_isReverse)
+void GameManager::spawn_missile(const Marionette::Transform& a_playerTransform,
+                                CueEntityHandle a_target, bool a_isReverse)
 {
     Marionette::Transform transform = make_transform(
         {
@@ -2629,39 +2417,32 @@ void GameManager::spawn_missile(
         { 0.22f, 0.22f, 1.4f });
 
     CueEntityHandle entity{ k_cueInvalidHandleValue };
-    if (spawn_object(
-            make_spawn_desc("Missile", "Missile", transform),
-            entity) != CueResult_Ok)
+    if (spawn_object(make_spawn_desc("Missile", "Missile", transform),
+                     entity) != CueResult_Ok)
     {
         return;
     }
 
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindMeshFilter,
-        make_mesh_filter("missile"));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindStaticMeshRenderer,
-        make_renderer(0u, 0u));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindCollider,
-        make_box_trigger({ 0.18f, 0.18f, 0.7f }));
+    (void)add_or_set_component(entity, Marionette::ComponentKindMeshFilter,
+                               make_mesh_filter("missile"));
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(0u, 0u));
+    (void)add_or_set_component(entity, Marionette::ComponentKindCollider,
+                               make_box_trigger({ 0.18f, 0.18f, 0.7f }));
     const bool isInfinite = is_infinite_missile_active();
-    (void)set_material_color(
-        entity,
-        isInfinite
-            ? k_infiniteMissileColor
-            : (a_isReverse ? k_reverseMissileColor : k_playerMissileColor));
+    (void)set_material_color(entity,
+                             isInfinite ? k_infiniteMissileColor
+                                        : (a_isReverse ? k_reverseMissileColor
+                                                       : k_playerMissileColor));
 
     missiles.push_back(Missile{
         entity,
         a_target,
         { 0.0f, 0.0f, 1.0f },
         isInfinite ? 0.75f : (a_isReverse ? 0.55f : 0.35f),
-        isInfinite ? reverseMissileTurnSpeed * 1.35f :
-            (a_isReverse ? reverseMissileTurnSpeed : missileTurnSpeed),
+        isInfinite ? reverseMissileTurnSpeed * 1.35f
+                   : (a_isReverse ? reverseMissileTurnSpeed : missileTurnSpeed),
         missileSpeed,
         missileLifeTime,
         isInfinite ? 3 : (a_isReverse ? 2 : 1),
@@ -2707,30 +2488,23 @@ void GameManager::spawn_enemy_kind(EnemyKind a_kind, float a_playerZ)
         tag = "HeavyCarrier";
     }
 
-    Marionette::Transform transform = make_transform(
-        { laneX, laneY, a_playerZ + spawnLeadDistance },
-        scale);
+    Marionette::Transform transform =
+        make_transform({ laneX, laneY, a_playerZ + spawnLeadDistance }, scale);
 
     CueEntityHandle entity{ k_cueInvalidHandleValue };
-    if (spawn_object(
-            make_spawn_desc(name, tag, transform),
-            entity) != CueResult_Ok)
+    if (spawn_object(make_spawn_desc(name, tag, transform), entity) !=
+        CueResult_Ok)
     {
         return;
     }
 
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindMeshFilter,
-        make_mesh_filter("f16"));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindStaticMeshRenderer,
-        make_renderer(1u, 1u));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindCollider,
-        make_box_trigger({ 0.7f, 0.7f, 0.7f }));
+    (void)add_or_set_component(entity, Marionette::ComponentKindMeshFilter,
+                               make_mesh_filter("f16"));
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(1u, 1u));
+    (void)add_or_set_component(entity, Marionette::ComponentKindCollider,
+                               make_box_trigger({ 0.7f, 0.7f, 0.7f }));
     if (a_kind != EnemyKind::Fighter)
     {
         (void)set_material_color(entity, color);
@@ -2738,108 +2512,192 @@ void GameManager::spawn_enemy_kind(EnemyKind a_kind, float a_playerZ)
     enemies.push_back(Enemy{ entity, radius, hp, a_kind });
 }
 
+void GameManager::spawn_boss_field(float a_playerZ)
+{
+    destroy_entity_safe(bossFieldEntity);
+    bossFieldEntity = CueEntityHandle{ k_cueInvalidHandleValue };
+
+    Marionette::Transform transform = make_transform(
+        { 0.0f, -1.2f, a_playerZ + spawnLeadDistance + 28.0f },
+        { 1.0f, 1.0f, 1.0f });
+
+    if (spawn_object(
+            make_spawn_desc(
+                Marionette::SpawnObjectKindStaticMesh,
+                "BossBattleField",
+                "Terrain",
+                transform),
+            bossFieldEntity) != CueResult_Ok)
+    {
+        return;
+    }
+
+    (void)add_or_set_component(
+        bossFieldEntity,
+        Marionette::ComponentKindMeshFilter,
+        make_mesh_filter("boss_battle_field"));
+    (void)add_or_set_component(
+        bossFieldEntity,
+        Marionette::ComponentKindStaticMeshRenderer,
+        make_renderer(1u, 1u));
+
+    spawn_visual_effect(
+        "BossFieldEntryFlash",
+        { 0.0f, 0.0f, a_playerZ + spawnLeadDistance + 8.0f },
+        { 3.4f, 3.4f, 3.4f },
+        k_bossBeamColor,
+        0.65f,
+        4.0f,
+        { 0.0f, 0.0f, -5.0f });
+}
+
 void GameManager::spawn_boss(float a_playerZ)
 {
-    const float bossZ = a_playerZ + spawnLeadDistance + 18.0f;
+    const float bossZ = a_playerZ + spawnLeadDistance + 24.0f;
     const auto spawnBossObject =
-        [this](
-            const char* a_name,
-            const CueFloat3& a_position,
-            const CueFloat3& a_scale,
-            const CueFloat3& a_colliderHalfExtent,
-            float a_radius,
-            int a_hp,
-            EnemyKind a_kind,
-            const Marionette::Color& a_color)
+        [this](const char* a_name, const CueFloat3& a_position,
+               const CueFloat3& a_scale, const CueFloat3& a_colliderHalfExtent,
+               float a_radius, int a_hp, EnemyKind a_kind,
+               const char* a_modelName, const Marionette::Color& a_color)
+    {
+        CueEntityHandle entity{ k_cueInvalidHandleValue };
+        if (spawn_object(make_spawn_desc(a_name,
+                                         a_kind == EnemyKind::BossCore
+                                             ? "BossCore"
+                                             : "BossPart",
+                                         make_transform(a_position, a_scale)),
+                         entity) != CueResult_Ok)
         {
-            CueEntityHandle entity{ k_cueInvalidHandleValue };
-            if (spawn_object(
-                    make_spawn_desc(
-                        a_name,
-                        a_kind == EnemyKind::BossCore ? "BossCore" : "BossPart",
-                        make_transform(a_position, a_scale)),
-                    entity) != CueResult_Ok)
-            {
-                return;
-            }
+            return;
+        }
 
-            (void)add_or_set_component(
-                entity,
-                Marionette::ComponentKindMeshFilter,
-                make_mesh_filter("f16"));
-            (void)add_or_set_component(
-                entity,
-                Marionette::ComponentKindStaticMeshRenderer,
-                make_renderer(1u, 1u));
-            (void)add_or_set_component(
-                entity,
-                Marionette::ComponentKindCollider,
-                make_box_trigger(a_colliderHalfExtent));
-            (void)set_material_color(entity, a_color);
-            enemies.push_back(Enemy{ entity, a_radius, a_hp, a_kind });
-        };
+        (void)add_or_set_component(entity, Marionette::ComponentKindMeshFilter,
+                                   make_mesh_filter(a_modelName));
+        (void)add_or_set_component(entity,
+                                   Marionette::ComponentKindStaticMeshRenderer,
+                                   make_renderer(1u, 1u));
+        (void)add_or_set_component(entity, Marionette::ComponentKindCollider,
+                                   make_box_trigger(a_colliderHalfExtent));
+        (void)set_material_color(entity, a_color);
+        enemies.push_back(Enemy{ entity, a_radius, a_hp, a_kind });
+    };
 
-    spawnBossObject(
-        "BossLeftWing",
-        { -3.1f, 0.0f, bossZ - 1.0f },
-        { 2.6f, 0.75f, 2.8f },
-        { 1.8f, 0.55f, 1.9f },
-        2.2f,
-        12,
-        EnemyKind::BossPart,
-        k_bossPartColor);
-    spawnBossObject(
-        "BossRightWing",
-        { 3.1f, 0.0f, bossZ - 1.0f },
-        { 2.6f, 0.75f, 2.8f },
-        { 1.8f, 0.55f, 1.9f },
-        2.2f,
-        12,
-        EnemyKind::BossPart,
-        k_bossPartColor);
-    spawnBossObject(
-        "BossCore",
-        { 0.0f, 0.15f, bossZ },
-        { 3.1f, 1.25f, 4.4f },
-        { 2.2f, 0.9f, 3.1f },
-        3.3f,
-        32,
-        EnemyKind::BossCore,
-        k_bossCoreLockedColor);
+    spawnBossObject("BossPortBroadside", { -3.35f, 0.08f, bossZ - 0.8f },
+                    { 1.35f, 1.1f, 1.55f }, { 1.15f, 0.7f, 1.45f }, 1.85f, 10,
+                    EnemyKind::BossPart, "boss_yamato_battery",
+                    k_bossPartColor);
+    spawnBossObject("BossStarboardBroadside", { 3.35f, 0.08f, bossZ - 0.8f },
+                    { 1.35f, 1.1f, 1.55f }, { 1.15f, 0.7f, 1.45f }, 1.85f, 10,
+                    EnemyKind::BossPart, "boss_yamato_battery",
+                    k_bossPartColor);
+    spawnBossObject("BossDeckTurret", { 0.0f, 1.18f, bossZ - 2.25f },
+                    { 1.0f, 0.85f, 1.0f }, { 1.0f, 0.55f, 1.2f }, 1.55f, 8,
+                    EnemyKind::BossPart, "boss_yamato_battery",
+                    k_bossPartColor);
+    spawnBossObject("BossEngineLauncher", { 0.0f, -0.72f, bossZ + 3.2f },
+                    { 1.15f, 0.9f, 1.2f }, { 1.2f, 0.55f, 1.25f }, 1.65f, 8,
+                    EnemyKind::BossPart, "boss_yamato_battery",
+                    k_bossPartColor);
+    spawnBossObject("BossYamatoCore", { 0.0f, 0.08f, bossZ },
+                    { 1.9f, 1.55f, 2.0f }, { 3.0f, 1.25f, 6.0f }, 4.8f, 38,
+                    EnemyKind::BossCore, "boss_yamato_hull",
+                    k_bossCoreLockedColor);
 
     bossCoreExposed = false;
     bossPartsDestroyed = 0;
+    bossPartTarget = 4;
     bossAttackStep = 0;
-    bossAttackTimer = 1.0f;
+    bossAttackTimer = 0.9f;
+    spawn_visual_effect("BossWarpIn", { 0.0f, 0.1f, bossZ - 4.8f },
+                        { 1.6f, 1.6f, 1.6f }, k_bossBeamColor, 0.75f, 4.5f,
+                        { 0.0f, 0.0f, -6.0f });
 }
 
 void GameManager::run_boss_attack_pattern(
     const Marionette::Transform& a_playerTransform)
 {
-    switch (bossAttackStep % 4u)
+    CueFloat3 corePosition{ 0.0f, 0.0f,
+                            a_playerTransform.position.z + spawnLeadDistance };
+    std::vector<CueFloat3> partPositions{};
+    partPositions.reserve(enemies.size());
+    for (const Enemy& enemy : enemies)
+    {
+        if (enemy.entity.value == k_cueInvalidHandleValue)
+        {
+            continue;
+        }
+
+        Marionette::Transform transform{};
+        if (get_transform(enemy.entity, transform) != CueResult_Ok)
+        {
+            continue;
+        }
+
+        if (enemy.kind == EnemyKind::BossCore)
+        {
+            corePosition = transform.position;
+        }
+        else if (enemy.kind == EnemyKind::BossPart)
+        {
+            partPositions.push_back(transform.position);
+        }
+    }
+
+    if (partPositions.empty())
+    {
+        partPositions.push_back(corePosition);
+    }
+
+    const CueFloat3 target = a_playerTransform.position;
+    switch (bossAttackStep % 5u)
     {
     case 0u:
-        spawn_enemy_bullet(a_playerTransform);
-        spawn_enemy_bullet(a_playerTransform);
-        bossAttackTimer = 0.75f;
+        for (const CueFloat3& position : partPositions)
+        {
+            spawn_enemy_bullet_at(add(position, { 0.0f, 0.35f, -1.55f }),
+                                  target, 1.05f, k_bossMuzzleColor);
+        }
+        bossAttackTimer = 0.72f;
         break;
     case 1u:
-        spawn_enemy_missile(a_playerTransform);
-        spawn_enemy_missile(a_playerTransform);
-        bossAttackTimer = 1.15f;
+        for (const CueFloat3& position : partPositions)
+        {
+            spawn_enemy_missile_at(add(position, { 0.0f, 0.0f, -1.8f }),
+                                   target);
+        }
+        bossAttackTimer = 1.05f;
         break;
     case 2u:
-        spawn_large_missile(a_playerTransform);
-        bossAttackTimer = 1.7f;
+        spawn_large_missile_at(add(corePosition, { -1.2f, 0.15f, -5.2f }),
+                               add(target, { -1.5f, 0.0f, 0.0f }), false);
+        spawn_large_missile_at(add(corePosition, { 1.2f, 0.15f, -5.2f }),
+                               add(target, { 1.5f, 0.0f, 0.0f }), false);
+        bossAttackTimer = 1.55f;
+        break;
+    case 3u:
+        for (uint32_t index = 0; index < 3u; ++index)
+        {
+            const float offset = static_cast<float>(index) - 1.0f;
+            spawn_enemy_bullet_at(
+                add(corePosition, { offset * 1.1f, 0.9f, -4.4f }),
+                add(target, { offset * 1.8f, 0.0f, 0.0f }), 1.2f,
+                k_enemyBulletColor);
+        }
+        bossAttackTimer = bossCoreExposed ? 0.75f : 1.1f;
         break;
     default:
-        spawn_enemy_bullet(a_playerTransform);
-        spawn_enemy_missile(a_playerTransform);
         if (bossCoreExposed)
         {
-            spawn_large_missile(a_playerTransform);
+            spawn_large_missile_at(add(corePosition, { 0.0f, 0.0f, -6.7f }),
+                                   target, true);
+            bossAttackTimer = 1.15f;
         }
-        bossAttackTimer = bossCoreExposed ? 0.9f : 1.25f;
+        else
+        {
+            spawn_enemy_bullet_at(add(corePosition, { 0.0f, 0.8f, -3.8f }),
+                                  target, 1.0f, k_bossMuzzleColor);
+            bossAttackTimer = 0.95f;
+        }
         break;
     }
     ++bossAttackStep;
@@ -2849,11 +2707,9 @@ void GameManager::spawn_enemy_bullet(
     const Marionette::Transform& a_playerTransform)
 {
     const float laneX =
-        static_cast<float>(static_cast<int>((spawnIndex + 5u) % 5u) - 2) *
-        1.5f;
+        static_cast<float>(static_cast<int>((spawnIndex + 5u) % 5u) - 2) * 1.5f;
     const float laneY =
-        static_cast<float>(static_cast<int>((spawnIndex + 4u) % 3u) - 1) *
-        0.9f;
+        static_cast<float>(static_cast<int>((spawnIndex + 4u) % 3u) - 1) * 0.9f;
     ++spawnIndex;
 
     Marionette::Transform transform = make_transform(
@@ -2872,33 +2728,57 @@ void GameManager::spawn_enemy_bullet(
         return;
     }
 
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindStaticMeshRenderer,
-        make_renderer(0u, 0u));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindCollider,
-        make_box_trigger({ 0.22f, 0.22f, 0.22f }));
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(0u, 0u));
+    (void)add_or_set_component(entity, Marionette::ComponentKindCollider,
+                               make_box_trigger({ 0.22f, 0.22f, 0.22f }));
     (void)set_material_color(entity, k_enemyBulletColor);
 
+    enemyBullets.push_back(
+        EnemyBullet{ entity,
+                     normalize_or_forward(subtract(a_playerTransform.position,
+                                                   transform.position)),
+                     0.32f, 0.0f });
+}
+
+void GameManager::spawn_enemy_bullet_at(const CueFloat3& a_position,
+                                        const CueFloat3& a_target,
+                                        float a_speedMultiplier,
+                                        const Marionette::Color& a_color)
+{
+    Marionette::Transform transform =
+        make_transform(a_position, { 0.42f, 0.42f, 0.42f });
+
+    CueEntityHandle entity{ k_cueInvalidHandleValue };
+    if (spawn_object(make_spawn_desc("BossBullet", "EnemyBullet", transform),
+                     entity) != CueResult_Ok)
+    {
+        return;
+    }
+
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(0u, 0u));
+    (void)add_or_set_component(entity, Marionette::ComponentKindCollider,
+                               make_box_trigger({ 0.28f, 0.28f, 0.28f }));
+    (void)set_material_color(entity, a_color);
+
+    spawn_visual_effect("BossMuzzleFlash", a_position, { 0.48f, 0.48f, 0.48f },
+                        k_bossMuzzleColor, 0.16f, 2.0f, { 0.0f, 0.0f, -5.0f });
+
     enemyBullets.push_back(EnemyBullet{
-        entity,
-        normalize_or_forward(
-            subtract(a_playerTransform.position, transform.position)),
-        0.32f,
-        0.0f });
+        entity, normalize_or_forward(subtract(a_target, a_position)),
+        0.38f * std::max(0.5f, a_speedMultiplier), 0.0f });
 }
 
 void GameManager::spawn_enemy_missile(
     const Marionette::Transform& a_playerTransform)
 {
     const float laneX =
-        static_cast<float>(static_cast<int>((spawnIndex + 3u) % 5u) - 2) *
-        1.8f;
+        static_cast<float>(static_cast<int>((spawnIndex + 3u) % 5u) - 2) * 1.8f;
     const float laneY =
-        static_cast<float>(static_cast<int>((spawnIndex + 1u) % 3u) - 1) *
-        1.0f;
+        static_cast<float>(static_cast<int>((spawnIndex + 1u) % 3u) - 1) * 1.0f;
 
     Marionette::Transform transform = make_transform(
         {
@@ -2916,25 +2796,50 @@ void GameManager::spawn_enemy_missile(
         return;
     }
 
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindMeshFilter,
-        make_mesh_filter("missile"));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindStaticMeshRenderer,
-        make_renderer(0u, 0u));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindCollider,
-        make_box_trigger({ 0.18f, 0.18f, 0.65f }));
+    (void)add_or_set_component(entity, Marionette::ComponentKindMeshFilter,
+                               make_mesh_filter("missile"));
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(0u, 0u));
+    (void)add_or_set_component(entity, Marionette::ComponentKindCollider,
+                               make_box_trigger({ 0.18f, 0.18f, 0.65f }));
     (void)set_material_color(entity, k_enemyMissileColor);
 
+    enemyMissiles.push_back(
+        EnemyMissile{ entity,
+                      normalize_or_forward(subtract(a_playerTransform.position,
+                                                    transform.position)),
+                      0.35f, 0.0f });
+}
+
+void GameManager::spawn_enemy_missile_at(const CueFloat3& a_position,
+                                         const CueFloat3& a_target)
+{
+    Marionette::Transform transform =
+        make_transform(a_position, { 0.28f, 0.28f, 1.3f });
+
+    CueEntityHandle entity{ k_cueInvalidHandleValue };
+    if (spawn_object(
+            make_spawn_desc("BossHomingMissile", "EnemyMissile", transform),
+            entity) != CueResult_Ok)
+    {
+        return;
+    }
+
+    (void)add_or_set_component(entity, Marionette::ComponentKindMeshFilter,
+                               make_mesh_filter("missile"));
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(0u, 0u));
+    (void)add_or_set_component(entity, Marionette::ComponentKindCollider,
+                               make_box_trigger({ 0.18f, 0.18f, 0.65f }));
+    (void)set_material_color(entity, k_enemyMissileColor);
+
+    spawn_visual_effect("BossMissileSmoke", a_position, { 0.55f, 0.55f, 0.55f },
+                        k_bossMuzzleColor, 0.22f, 1.8f, { 0.0f, 0.0f, -4.0f });
+
     enemyMissiles.push_back(EnemyMissile{
-        entity,
-        normalize_or_forward(
-            subtract(a_playerTransform.position, transform.position)),
-        0.35f,
+        entity, normalize_or_forward(subtract(a_target, a_position)), 0.35f,
         0.0f });
 }
 
@@ -2942,11 +2847,9 @@ void GameManager::spawn_large_missile(
     const Marionette::Transform& a_playerTransform)
 {
     const float laneX =
-        static_cast<float>(static_cast<int>((spawnIndex + 4u) % 5u) - 2) *
-        1.5f;
+        static_cast<float>(static_cast<int>((spawnIndex + 4u) % 5u) - 2) * 1.5f;
     const float laneY =
-        static_cast<float>(static_cast<int>((spawnIndex + 5u) % 3u) - 1) *
-        0.9f;
+        static_cast<float>(static_cast<int>((spawnIndex + 5u) % 3u) - 1) * 0.9f;
 
     Marionette::Transform transform = make_transform(
         {
@@ -2964,63 +2867,116 @@ void GameManager::spawn_large_missile(
         return;
     }
 
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindMeshFilter,
-        make_mesh_filter("missile"));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindStaticMeshRenderer,
-        make_renderer(1u, 1u));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindCollider,
-        make_box_trigger({ 0.45f, 0.45f, 1.3f }));
+    (void)add_or_set_component(entity, Marionette::ComponentKindMeshFilter,
+                               make_mesh_filter("missile"));
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(1u, 1u));
+    (void)add_or_set_component(entity, Marionette::ComponentKindCollider,
+                               make_box_trigger({ 0.45f, 0.45f, 1.3f }));
     (void)set_material_color(entity, k_largeMissileColor);
 
+    largeMissiles.push_back(
+        LargeMissile{ entity,
+                      normalize_or_forward(subtract(a_playerTransform.position,
+                                                    transform.position)),
+                      0.95f, 0.0f });
+}
+
+void GameManager::spawn_large_missile_at(const CueFloat3& a_position,
+                                         const CueFloat3& a_target,
+                                         bool a_isWaveTorpedo)
+{
+    Marionette::Transform transform = make_transform(
+        a_position, a_isWaveTorpedo ? CueFloat3{ 1.1f, 1.1f, 2.9f }
+                                    : CueFloat3{ 0.85f, 0.85f, 2.6f });
+
+    CueEntityHandle entity{ k_cueInvalidHandleValue };
+    if (spawn_object(make_spawn_desc(a_isWaveTorpedo ? "WaveMotionTorpedo"
+                                                     : "BossLargeMissile",
+                                     "LargeMissile", transform),
+                     entity) != CueResult_Ok)
+    {
+        return;
+    }
+
+    (void)add_or_set_component(
+        entity, Marionette::ComponentKindMeshFilter,
+        make_mesh_filter(a_isWaveTorpedo ? "yamato_wave_torpedo" : "missile"));
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(1u, 1u));
+    (void)add_or_set_component(
+        entity, Marionette::ComponentKindCollider,
+        make_box_trigger(a_isWaveTorpedo ? CueFloat3{ 0.6f, 0.6f, 1.45f }
+                                         : CueFloat3{ 0.45f, 0.45f, 1.3f }));
+    (void)set_material_color(entity, a_isWaveTorpedo ? k_bossBeamColor
+                                                     : k_largeMissileColor);
+
+    spawn_visual_effect(
+        a_isWaveTorpedo ? "WaveCannonCharge" : "BossTorpedoFlash", a_position,
+        a_isWaveTorpedo ? CueFloat3{ 1.2f, 1.2f, 1.2f }
+                        : CueFloat3{ 0.7f, 0.7f, 0.7f },
+        a_isWaveTorpedo ? k_bossBeamColor : k_largeMissileColor,
+        a_isWaveTorpedo ? 0.42f : 0.22f, a_isWaveTorpedo ? 3.5f : 2.0f,
+        { 0.0f, 0.0f, -5.0f });
+
     largeMissiles.push_back(LargeMissile{
-        entity,
-        normalize_or_forward(
-            subtract(a_playerTransform.position, transform.position)),
-        0.95f,
-        0.0f });
+        entity, normalize_or_forward(subtract(a_target, a_position)),
+        a_isWaveTorpedo ? 1.25f : 0.95f, 0.0f });
 }
 
 void GameManager::spawn_salvage(float a_playerZ)
 {
     const float laneX =
-        static_cast<float>(static_cast<int>((spawnIndex + 1u) % 5u) - 2) *
-        1.8f;
+        static_cast<float>(static_cast<int>((spawnIndex + 1u) % 5u) - 2) * 1.8f;
     const float laneY =
-        static_cast<float>(static_cast<int>((spawnIndex + 2u) % 3u) - 1) *
-        1.0f;
+        static_cast<float>(static_cast<int>((spawnIndex + 2u) % 3u) - 1) * 1.0f;
 
     spawn_salvage_at({ laneX, laneY, a_playerZ + spawnLeadDistance * 0.72f });
 }
 
 void GameManager::spawn_salvage_at(const CueFloat3& a_position)
 {
-    Marionette::Transform transform = make_transform(
-        a_position,
-        { 0.7f, 0.7f, 0.7f });
+    Marionette::Transform transform =
+        make_transform(a_position, { 0.7f, 0.7f, 0.7f });
     CueEntityHandle entity{ k_cueInvalidHandleValue };
-    if (spawn_object(
-            make_spawn_desc("Salvage", "Salvage", transform),
-            entity) != CueResult_Ok)
+    if (spawn_object(make_spawn_desc("Salvage", "Salvage", transform),
+                     entity) != CueResult_Ok)
     {
         return;
     }
 
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindStaticMeshRenderer,
-        make_renderer(0u, 1u));
-    (void)add_or_set_component(
-        entity,
-        Marionette::ComponentKindCollider,
-        make_box_trigger({ 0.45f, 0.45f, 0.45f }));
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(0u, 1u));
+    (void)add_or_set_component(entity, Marionette::ComponentKindCollider,
+                               make_box_trigger({ 0.45f, 0.45f, 0.45f }));
     (void)set_material_color(entity, k_salvageColor);
     salvages.push_back(Salvage{ entity, 0.9f });
+}
+
+void GameManager::spawn_visual_effect(const char* a_name,
+                                      const CueFloat3& a_position,
+                                      const CueFloat3& a_scale,
+                                      const Marionette::Color& a_color,
+                                      float a_lifeTime, float a_scaleGrowth,
+                                      const CueFloat3& a_velocity)
+{
+    Marionette::Transform transform = make_transform(a_position, a_scale);
+    CueEntityHandle entity{ k_cueInvalidHandleValue };
+    if (spawn_object(make_spawn_desc(a_name, "Effect", transform), entity) !=
+        CueResult_Ok)
+    {
+        return;
+    }
+
+    (void)add_or_set_component(entity,
+                               Marionette::ComponentKindStaticMeshRenderer,
+                               make_renderer(0u, 0u));
+    (void)set_material_color(entity, a_color);
+    visualEffects.push_back(VisualEffect{
+        entity, a_velocity, 0.0f, std::max(0.02f, a_lifeTime), a_scaleGrowth });
 }
 
 void GameManager::destroy_entity_safe(CueEntityHandle a_entity) const
@@ -3039,20 +2995,15 @@ void GameManager::log_progress()
     }
 
     char message[320]{};
-    (void)std::snprintf(
-        message,
-        sizeof(message),
-        "Score %d / Salvage %d / Armor %d / ArmorTimer %.1f / Reverse %d / ReverseTimer %.1f / SonicTimer %.1f / Ready %s / InfiniteTimer %.1f / Time %.1f",
-        score,
-        salvageCount,
-        armorCount,
-        armorStateTimer,
-        reverseMissileAmmo,
-        reverseMissileStateTimer,
-        sonicStreamTimer,
-        is_infinite_missile_ready() ? "YES" : "NO",
-        infiniteMissileTimer,
-        elapsedTime);
+    (void)std::snprintf(message, sizeof(message),
+                        "Score %d / Salvage %d / Armor %d / ArmorTimer %.1f / "
+                        "Reverse %d / ReverseTimer %.1f / SonicTimer %.1f / "
+                        "Ready %s / InfiniteTimer %.1f / Time %.1f",
+                        score, salvageCount, armorCount, armorStateTimer,
+                        reverseMissileAmmo, reverseMissileStateTimer,
+                        sonicStreamTimer,
+                        is_infinite_missile_ready() ? "YES" : "NO",
+                        infiniteMissileTimer, elapsedTime);
     log_info(message);
     progressLogTimer = 5.0f;
 }

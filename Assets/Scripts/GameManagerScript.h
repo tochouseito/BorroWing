@@ -12,213 +12,98 @@ MARIONETTE_DECLARE_SCRIPT_TYPE(GameManager, "GameManager");
 
 class GameManager final : public Marionette::Behaviour<GameManager>
 {
-public:
+  public:
     using StateBlob = Marionette::StateBlob<GameManager>;
     using Marionette::Behaviour<GameManager>::update;
     MARIONETTE_FIELDS(
-        CUE_FIELD_FLOAT_META(
-            "Combat",
-            "fireInterval",
-            0.18f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Combat",
-            "machineGunInterval",
-            0.055f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Combat",
-            "machineGunSpeed",
-            82.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Combat",
-            "machineGunLifeTime",
-            0.85f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Combat",
-            "missileSpeed",
-            54.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Combat",
-            "missileLifeTime",
-            2.4f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Combat",
-            "reverseMissileStateDuration",
-            8.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Combat",
-            "reverseMissileTurnSpeed",
-            16.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "SonicStream",
-            "sonicStreamDuration",
-            6.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "SonicStream",
-            "sonicLockAcquireMultiplier",
-            2.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "SonicStream",
-            "sonicFireIntervalMultiplier",
-            0.65f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "SonicStream",
-            "sonicMissileTurnMultiplier",
-            1.35f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Armor",
-            "armorStateDuration",
-            10.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "InfiniteMissile",
-            "infiniteMissileDuration",
-            7.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "InfiniteMissile",
-            "infiniteFireIntervalMultiplier",
-            0.35f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "InfiniteMissile",
-            "infiniteLockRangeMultiplier",
-            1.8f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "LockOn",
-            "lockRange",
-            90.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "LockOn",
-            "lockWidth",
-            4.5f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "LockOn",
-            "lockHeight",
-            3.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "LockOn",
-            "lockAcquireTime",
-            0.28f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "LockOn",
-            "missileTurnSpeed",
-            10.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "ConvertField",
-            "fieldMaxGauge",
-            30.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "ConvertField",
-            "fieldDrainPerSecond",
-            1.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "ConvertField",
-            "fieldRechargePerSecond",
-            0.65f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "ConvertField",
-            "fieldHalfExtentX",
-            3.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "ConvertField",
-            "fieldHalfExtentY",
-            2.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "ConvertField",
-            "fieldHalfExtentZ",
-            3.2f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Spawn",
-            "enemySpawnInterval",
-            1.15f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Spawn",
-            "salvageSpawnInterval",
-            2.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Spawn",
-            "enemyMissileSpawnInterval",
-            1.6f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Spawn",
-            "enemyMissileSpeed",
-            26.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Spawn",
-            "largeMissileSpawnInterval",
-            5.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Spawn",
-            "largeMissileSpeed",
-            16.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Spawn",
-            "normalBulletSpawnInterval",
-            1.1f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Spawn",
-            "normalBulletSpeed",
-            34.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Spawn",
-            "spawnLeadDistance",
-            72.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "World",
-            "worldScrollSpeed",
-            18.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_FLOAT_META(
-            "Flow",
-            "stageDuration",
-            120.0f,
-            Marionette::EditAnywhere | Marionette::Serialize),
-        CUE_FIELD_INT32_META(
-            "Flow",
-            "playerHullMax",
-            3,
-            Marionette::EditAnywhere | Marionette::Serialize)
-    );
+        CUE_FIELD_FLOAT_META("Combat", "fireInterval", 0.18f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Combat", "machineGunInterval", 0.055f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Combat", "machineGunSpeed", 82.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Combat", "machineGunLifeTime", 0.85f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Combat", "missileSpeed", 54.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Combat", "missileLifeTime", 2.4f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Combat", "reverseMissileStateDuration", 8.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Combat", "reverseMissileTurnSpeed", 16.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("SonicStream", "sonicStreamDuration", 6.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("SonicStream", "sonicLockAcquireMultiplier", 2.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("SonicStream", "sonicFireIntervalMultiplier",
+                             0.65f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("SonicStream", "sonicMissileTurnMultiplier", 1.35f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Armor", "armorStateDuration", 10.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("InfiniteMissile", "infiniteMissileDuration", 7.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("InfiniteMissile",
+                             "infiniteFireIntervalMultiplier", 0.35f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("InfiniteMissile", "infiniteLockRangeMultiplier",
+                             1.8f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("LockOn", "lockRange", 90.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("LockOn", "lockWidth", 4.5f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("LockOn", "lockHeight", 3.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("LockOn", "lockAcquireTime", 0.28f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("LockOn", "missileTurnSpeed", 10.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("ConvertField", "fieldMaxGauge", 30.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("ConvertField", "fieldDrainPerSecond", 1.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("ConvertField", "fieldRechargePerSecond", 0.65f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("ConvertField", "fieldHalfExtentX", 3.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("ConvertField", "fieldHalfExtentY", 2.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("ConvertField", "fieldHalfExtentZ", 3.2f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Spawn", "enemySpawnInterval", 1.15f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Spawn", "salvageSpawnInterval", 2.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Spawn", "enemyMissileSpawnInterval", 1.6f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Spawn", "enemyMissileSpeed", 26.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Spawn", "largeMissileSpawnInterval", 5.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Spawn", "largeMissileSpeed", 16.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Spawn", "normalBulletSpawnInterval", 1.1f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Spawn", "normalBulletSpeed", 34.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Spawn", "spawnLeadDistance", 72.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("World", "worldScrollSpeed", 18.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_FLOAT_META("Flow", "stageDuration", 75.0f,
+                             Marionette::EditAnywhere | Marionette::Serialize),
+        CUE_FIELD_INT32_META("Flow", "playerHullMax", 3,
+                             Marionette::EditAnywhere | Marionette::Serialize));
     MARIONETTE_NO_FUNCTIONS();
 
     void bind_fields(const Marionette::ScriptFieldReader& a_reader);
     void start();
     void update();
 
-private:
+  private:
     struct Missile final
     {
         CueEntityHandle entity{ k_cueInvalidHandleValue };
@@ -278,6 +163,15 @@ private:
         CueEntityHandle entity{ k_cueInvalidHandleValue };
         float radius = 0.9f;
         bool inConvertField = false;
+    };
+
+    struct VisualEffect final
+    {
+        CueEntityHandle entity{ k_cueInvalidHandleValue };
+        CueFloat3 velocity{ 0.0f, 0.0f, 0.0f };
+        float age = 0.0f;
+        float lifeTime = 0.35f;
+        float scaleGrowth = 0.0f;
     };
 
     struct TerrainProxyDef final
@@ -341,19 +235,12 @@ private:
     void ensure_flow_ui();
     void update_flow_ui();
     void destroy_flow_ui();
-    CueEntityHandle spawn_ui_text(
-        const char* a_name,
-        float a_y,
-        float a_height,
-        uint32_t a_fontSize,
-        uint32_t a_order,
-        const Marionette::Color& a_color);
-    void set_ui_text(
-        CueEntityHandle a_entity,
-        std::string_view a_text,
-        uint32_t a_fontSize,
-        uint32_t a_order,
-        const Marionette::Color& a_color) const;
+    CueEntityHandle spawn_ui_text(const char* a_name, float a_y, float a_height,
+                                  uint32_t a_fontSize, uint32_t a_order,
+                                  const Marionette::Color& a_color);
+    void set_ui_text(CueEntityHandle a_entity, std::string_view a_text,
+                     uint32_t a_fontSize, uint32_t a_order,
+                     const Marionette::Color& a_color) const;
     void register_player_hit(int a_scorePenalty);
     void resolve_player();
     void configure_player_collider() const;
@@ -367,10 +254,9 @@ private:
     void absorb_enemy_missile(EnemyMissile& a_missile);
     void absorb_large_missile(LargeMissile& a_missile);
     void absorb_salvage(Salvage& a_salvage);
-    [[nodiscard]] bool is_inside_convert_field(
-        const CueFloat3& a_center,
-        const CueFloat3& a_position,
-        float a_radius) const;
+    [[nodiscard]] bool is_inside_convert_field(const CueFloat3& a_center,
+                                               const CueFloat3& a_position,
+                                               float a_radius) const;
     [[nodiscard]] bool is_sonic_stream_active() const noexcept;
     [[nodiscard]] bool is_armor_active() const noexcept;
     [[nodiscard]] bool is_infinite_missile_ready() const noexcept;
@@ -385,23 +271,19 @@ private:
     [[nodiscard]] bool is_locked(CueEntityHandle a_entity) const;
     void update_lock_visuals();
     void clear_lock_visual(CueEntityHandle a_entity) const;
-    void set_lock_visual(
-        CueEntityHandle a_entity,
-        const Marionette::Color& a_color) const;
+    void set_lock_visual(CueEntityHandle a_entity,
+                         const Marionette::Color& a_color) const;
     void update_combat(float a_deltaTime);
     void load_terrain_config();
     void unload_terrain_config();
     void update_terrain_segments(float a_deltaTime);
     void update_terrain_collisions(float a_deltaTime);
-    void spawn_terrain_segment(
-        const TerrainSegmentDef& a_definition,
-        uint32_t a_definitionIndex,
-        float a_centerZ);
+    void spawn_terrain_segment(const TerrainSegmentDef& a_definition,
+                               uint32_t a_definitionIndex, float a_centerZ);
     void destroy_terrain_segment(ActiveTerrainSegment& a_segment) const;
     [[nodiscard]] uint32_t choose_terrain_segment_index() const noexcept;
     [[nodiscard]] bool read_terrain_segment_definition(
-        Marionette::JsonConfigHandle a_indexConfig,
-        uint32_t a_index,
+        Marionette::JsonConfigHandle a_indexConfig, uint32_t a_index,
         TerrainSegmentDef& a_outDefinition);
     void translate_entity_z(CueEntityHandle a_entity, float a_deltaZ) const;
     void update_spawning(float a_deltaTime);
@@ -411,22 +293,36 @@ private:
     void update_large_missiles(float a_deltaTime);
     void update_enemies(float a_deltaTime);
     void update_salvage();
+    void update_visual_effects(float a_deltaTime);
     void cleanup_behind_player();
     void spawn_machine_gun_bullet(
         const Marionette::Transform& a_playerTransform);
-    void spawn_missile(
-        const Marionette::Transform& a_playerTransform,
-        CueEntityHandle a_target,
-        bool a_isReverse);
+    void spawn_missile(const Marionette::Transform& a_playerTransform,
+                       CueEntityHandle a_target, bool a_isReverse);
     void spawn_enemy(float a_playerZ);
     void spawn_enemy_kind(EnemyKind a_kind, float a_playerZ);
+    void spawn_boss_field(float a_playerZ);
     void spawn_boss(float a_playerZ);
-    void run_boss_attack_pattern(const Marionette::Transform& a_playerTransform);
+    void run_boss_attack_pattern(
+        const Marionette::Transform& a_playerTransform);
     void spawn_enemy_bullet(const Marionette::Transform& a_playerTransform);
+    void spawn_enemy_bullet_at(const CueFloat3& a_position,
+                               const CueFloat3& a_target,
+                               float a_speedMultiplier,
+                               const Marionette::Color& a_color);
     void spawn_enemy_missile(const Marionette::Transform& a_playerTransform);
+    void spawn_enemy_missile_at(const CueFloat3& a_position,
+                                const CueFloat3& a_target);
     void spawn_large_missile(const Marionette::Transform& a_playerTransform);
+    void spawn_large_missile_at(const CueFloat3& a_position,
+                                const CueFloat3& a_target,
+                                bool a_isWaveTorpedo);
     void spawn_salvage(float a_playerZ);
     void spawn_salvage_at(const CueFloat3& a_position);
+    void spawn_visual_effect(const char* a_name, const CueFloat3& a_position,
+                             const CueFloat3& a_scale,
+                             const Marionette::Color& a_color, float a_lifeTime,
+                             float a_scaleGrowth, const CueFloat3& a_velocity);
     void destroy_entity_safe(CueEntityHandle a_entity) const;
     void log_progress();
 
@@ -437,6 +333,7 @@ private:
     std::vector<LargeMissile> largeMissiles{};
     std::vector<Enemy> enemies{};
     std::vector<Salvage> salvages{};
+    std::vector<VisualEffect> visualEffects{};
     std::vector<TerrainSegmentDef> terrainDefinitions{};
     std::vector<ActiveTerrainSegment> activeTerrainSegments{};
     CueEntityHandle convertFieldEntity{ k_cueInvalidHandleValue };
@@ -446,6 +343,7 @@ private:
     CueEntityHandle uiTitleEntity{ k_cueInvalidHandleValue };
     CueEntityHandle uiBodyEntity{ k_cueInvalidHandleValue };
     CueEntityHandle uiHudEntity{ k_cueInvalidHandleValue };
+    CueEntityHandle bossFieldEntity{ k_cueInvalidHandleValue };
     FlowState flowState = FlowState::Title;
     bool hasLoggedStartup = false;
     bool isConvertFieldActive = false;
@@ -458,6 +356,7 @@ private:
     bool hasSpawnedBoss = false;
     bool bossCoreExposed = false;
     int bossPartsDestroyed = 0;
+    int bossPartTarget = 4;
     uint32_t bossAttackStep = 0;
     StagePhase stagePhase = StagePhase::Launch;
     float machineGunTimer = 0.0f;
@@ -514,7 +413,7 @@ private:
     float normalBulletSpeed = 34.0f;
     float spawnLeadDistance = 72.0f;
     float worldScrollSpeed = 18.0f;
-    float stageDuration = 120.0f;
+    float stageDuration = 75.0f;
     int score = 0;
     int salvageCount = 0;
     int reverseMissileAmmo = 0;
