@@ -10,6 +10,11 @@
 *.userosscache
 *.sln.docstates
 
+# CueEngine
+.serena/
+Intermediate/
+out/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
